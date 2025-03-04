@@ -74,5 +74,5 @@ class RiceSpacings {
 ///
 ThemeData riceTheme = ThemeData(
   fontFamily: 'DM Sans',
-  scaffoldBackgroundColor: RiceColors.backGroundColor,
+  scaffoldBackgroundColor: RiceColors.backgroundAccent,
 );
