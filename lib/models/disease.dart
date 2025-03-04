@@ -4,11 +4,20 @@ enum DiseaseType {
   parasitic,
 }
 
+enum DiseasePart {
+  leaf,
+  stem,
+  root,
+  panicle,
+  grain
+}
+
 class Disease {
   final String id;
   final String name;
   final String description;
   final DiseaseType type;
+  final DiseasePart? affectedPart;
   final DateTime scanDate;
   final double accuracy;
 
@@ -19,6 +28,7 @@ class Disease {
     required this.type,
     required this.scanDate,
     required this.accuracy,
+    this.affectedPart,
   });
 
   // Convert JSON to Disease object
@@ -29,7 +39,9 @@ class Disease {
       description: json['description'],
       type: DiseaseType.values.firstWhere((e) => e.name == json['type']),
       scanDate: DateTime.parse(json['scanDate']),
-      accuracy: json['accuracy'].toDouble(),
+      accuracy: json['accuracy'].toDouble(), 
+      affectedPart: DiseasePart.values.firstWhere((e) => e.name == json['affectedPart']),
+
     );
   }
 
