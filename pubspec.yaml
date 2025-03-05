@@ -36,12 +36,14 @@ dependencies:
   cupertino_icons: ^1.0.8
   icon_decoration: ^2.1.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   intl: ^0.20.2
   image_picker:
   uuid: ^4.5.1
+  google_fonts: ^6.1.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -81,8 +83,8 @@ flutter:
   # fonts:
   #   - family: Schyler
   #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+  #       - asset: assets/fonts/Schyler-Regular.ttf
+  #       - asset: assets/fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:
