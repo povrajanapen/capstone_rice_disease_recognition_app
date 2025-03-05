@@ -50,7 +50,7 @@ class RiceColors {
 class RiceTextStyles {
   static TextStyle heading = GoogleFonts.dmSans(fontSize: 35, fontWeight: FontWeight.w800);
 
-  static TextStyle body = GoogleFonts.dmSans(fontSize: 20, fontWeight: FontWeight.w600);
+  static TextStyle body = GoogleFonts.dmSans(fontSize: 20, fontWeight: FontWeight.w800);
 
   static TextStyle label = GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w500);
 
