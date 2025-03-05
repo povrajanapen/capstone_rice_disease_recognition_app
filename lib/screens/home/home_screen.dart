@@ -5,6 +5,7 @@ import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../saved diagnosis/saved_diagnosis_screen.dart';
 import 'widgets/diagnosis_controller.dart';
+import 'widgets/news_slider.dart';
 import 'widgets/recent_diagnoses_section.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,13 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(RiceSpacings.m),
       child: Column(
         children: [
-          // Uncomment and modify this button as needed
-          // RiceButton(
-          //   type: RiceButtonType.secondary,
-          //   icon: Icons.login,
-          //   onPressed: onSelect,
-          //   text: 'Login',
-          // ),
+          NewsSlider(),
           const SizedBox(height: RiceSpacings.m),
           FutureBuilder<List<DiagnosisModel>>(
             future: _recentDiagnoses,
