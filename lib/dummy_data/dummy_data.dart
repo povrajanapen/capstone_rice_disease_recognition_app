@@ -3,20 +3,27 @@
 import '../models/diagnosis_model.dart';
 import '../models/disease.dart';
 import '../models/scan.dart';
+import '../screens/home/widgets/news_slider.dart';
 
 // Dummy slider content
-final List<Map<String, String>> sliderContent = [
-  {
-    'image': 'assets/images/disease_thumbnail.jpg',
-    'title': 'Early detection for a thriving harvest',
-    'subtitle': 'Scan your rice plants to detect diseases early',
-  },
-  {
-    'image': 'assets/images/disease_thumbnail.jpg',
-    'title': 'Protect your rice yield',
-    'subtitle': 'Get instant diagnosis and treatment recommendations',
-  },
+final List<SlideContent> sliderContent = [
+  SlideContent(
+    image: 'assets/images/SCAN.png',
+    title: 'Tell me phone, what\'s destroying my crops?',
+    subtitle: 'Scan your rice plants to detect diseases early',
+  ),
+  SlideContent(
+    image: 'assets/images/disease_thumbnail.jpg',
+    title: 'Protect your rice yield',
+    subtitle: 'Get instant diagnosis and treatment recommendations',
+  ),
+  SlideContent(
+    image: 'assets/images/disease_thumbnail.jpg',
+    title: 'Protect your rice yield',
+    subtitle: 'Get instant diagnosis and treatment recommendations',
+  ),
 ];
+
 
 // Dummy diseases
 final List<Disease> diseases = [
