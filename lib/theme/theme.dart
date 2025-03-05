@@ -62,7 +62,7 @@ class RiceTextStyles {
 ///
 class RiceSpacings {
   static const double s = 12;
-  static const double m = 20; 
+  static const double m = 18; 
   static const double l = 24; 
   static const double xl = 32; 
   static const double xxl = 40; 
