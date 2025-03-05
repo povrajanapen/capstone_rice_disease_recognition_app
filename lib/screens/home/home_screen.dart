@@ -1,10 +1,12 @@
 import 'package:capstone_dr_rice/screens/common%20disease/common_disease_screen.dart'
     show CommonDiseasesScreen;
 import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
+import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
 import 'package:flutter/material.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
+import '../scan/scan_screen.dart';
 import 'widgets/app_header.dart';
 import 'widgets/diagnosis_controller.dart';
 import 'widgets/recent_diagnoses_section.dart';
@@ -38,7 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
       case '/scan':
-        // TODO: Implement Rice Scan screen navigation
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ScanScreen()),
+        );
         break;
       case '/report':
         // TODO: Implement Report Disease screen navigation
@@ -66,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: RiceSpacings.l),
 
                 // Image Carousel
+                NewsSlider(),
                 // const ImageCarousel(),
                 const SizedBox(height: RiceSpacings.s),
 

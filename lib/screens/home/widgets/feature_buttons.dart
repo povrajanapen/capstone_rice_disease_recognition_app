@@ -37,8 +37,8 @@ class FeatureButtons extends StatelessWidget {
                   Text(
                     button['title']!,
                     style: RiceTextStyles.label.copyWith(
-                      color: RiceColors.textNormal,
-                      fontWeight: FontWeight.w600,
+                      color: RiceColors.textNormal, 
+                      fontWeight: FontWeight.w600, 
                     ),
                     textAlign: TextAlign.center,
                   ),
