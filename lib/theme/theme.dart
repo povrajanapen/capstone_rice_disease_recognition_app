@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ///
 /// Definition of App Colors for RiceTheme.
@@ -15,6 +16,7 @@ class RiceColors {
 
   static Color greyLight          = const Color(0xFFE2E2E2);
 
+  static Color red              = const Color(0xFFEB463D);
   static Color white              = Colors.white;
 
   static Color get backGroundColor { 
@@ -46,13 +48,13 @@ class RiceColors {
 /// Definition of Text Styles for RiceTheme.
 ///
 class RiceTextStyles {
-  static TextStyle heading = TextStyle(fontSize: 35, fontWeight: FontWeight.w500);
+  static TextStyle heading = GoogleFonts.dmSans(fontSize: 35, fontWeight: FontWeight.w800);
 
-  static TextStyle body = TextStyle(fontSize: 20, fontWeight: FontWeight.w400);
+  static TextStyle body = GoogleFonts.dmSans(fontSize: 20, fontWeight: FontWeight.w600);
 
-  static TextStyle label = TextStyle(fontSize: 12, fontWeight: FontWeight.w300);
+  static TextStyle label = GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w500);
 
-  static TextStyle button = TextStyle(fontSize: 17, fontWeight: FontWeight.w400);
+  static TextStyle button = GoogleFonts.dmSans(fontSize: 17, fontWeight: FontWeight.w600);
 }
 
 ///
@@ -60,7 +62,7 @@ class RiceTextStyles {
 ///
 class RiceSpacings {
   static const double s = 12;
-  static const double m = 16; 
+  static const double m = 20; 
   static const double l = 24; 
   static const double xl = 32; 
   static const double xxl = 40; 
