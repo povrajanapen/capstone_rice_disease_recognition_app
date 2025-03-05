@@ -6,7 +6,7 @@ class DiagnosisModel {
   final String userId;
   final Disease disease;
   final DateTime scanDate;
-  final String imageUrl; // Scanned image URL
+  final String? imageUrl; // Scanned image URL
   final bool isSaved;
 
   DiagnosisModel({
@@ -40,6 +40,15 @@ class DiagnosisModel {
       'imageUrl': imageUrl,
       'isSaved': isSaved,
     };
+  }
+
+  bool get isNetworkImage {
+    return imageUrl != null && imageUrl!.startsWith('http');
+  }
+
+  // Fallback if API image is missing
+  String get validImageUrl {
+    return imageUrl?.isNotEmpty == true ? imageUrl! : 'assets/images/placeholder.png';
   }
 
 }
