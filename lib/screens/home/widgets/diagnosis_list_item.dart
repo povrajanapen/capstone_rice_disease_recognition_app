@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../../../models/diagnosis_model.dart';
 import '../../../utils/date_time_util.dart';
 
-
 class DiagnosisListItem extends StatelessWidget {
   final DiagnosisModel diagnosis;
   final VoidCallback onTap;
@@ -26,20 +25,18 @@ class DiagnosisListItem extends StatelessWidget {
         InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: RiceSpacings.s),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buildDiseaseImage(),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: _buildDiseaseInfo(),
-                ),
+                Expanded(child: _buildDiseaseInfo()),
               ],
             ),
           ),
         ),
-      RiceDivider(),
+        RiceDivider(),
       ],
     );
   }
@@ -71,12 +68,13 @@ class DiagnosisListItem extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            
             //// Disease Name
-            Text(
-              diagnosis.disease.name,
-              style: RiceTextStyles.label.copyWith(
-                fontWeight: FontWeight.w700,
+            Expanded(
+              child: Text(
+                diagnosis.disease.name,
+                style: RiceTextStyles.label.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             Row(
@@ -89,7 +87,7 @@ class DiagnosisListItem extends StatelessWidget {
                     fontSize: 11,
                   ),
                 ),
-                SizedBox(width: 4),
+                SizedBox(width: 1),
                 //// More Icon
                 IconButton(
                   icon: const Icon(Icons.more_vert, size: 16),
@@ -102,7 +100,9 @@ class DiagnosisListItem extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+
+        const SizedBox(height: 2),
+
         //// Disease Description
         Text(
           diagnosis.disease.description,
@@ -116,5 +116,4 @@ class DiagnosisListItem extends StatelessWidget {
       ],
     );
   }
-
 }
