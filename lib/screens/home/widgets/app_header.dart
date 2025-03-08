@@ -18,7 +18,7 @@ class AppHeader extends StatelessWidget {
           // Logo
           Image.asset(
             'assets/images/logo.png',
-            height: 56, // Adjusted height to fit AppBar better
+            height: 56,
           ),
 
           // Right side buttons
@@ -33,7 +33,7 @@ class AppHeader extends StatelessWidget {
                   color: RiceColors.neutral,
                   borderRadius: BorderRadius.circular(
                     20,
-                  ), // Slightly less circular
+                  ), 
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +42,7 @@ class AppHeader extends StatelessWidget {
                     Icon(
                       Icons.phone_in_talk,
                       color: RiceColors.white,
-                      size: 20, // Adjusted size for better alignment
+                      size: 20, 
                     ),
                   ],
                 ),
@@ -51,7 +51,7 @@ class AppHeader extends StatelessWidget {
 
               // Language Dropdown
               Container(
-                height: 40, // Reduced height for better alignment
+                height: 40, 
                 padding: const EdgeInsets.symmetric(horizontal: RiceSpacings.s),
                 decoration: BoxDecoration(
                   color: RiceColors.white,
@@ -64,7 +64,7 @@ class AppHeader extends StatelessWidget {
                     icon: const Icon(
                       Icons.arrow_drop_down,
                       size: 18,
-                    ), // Adjusted size
+                    ), 
                     items: [
                       DropdownMenuItem(
                         value: 'en',
@@ -80,7 +80,7 @@ class AppHeader extends StatelessWidget {
                               "English",
                               style: TextStyle(
                                 fontSize: 14,
-                              ), // Adjusted text size
+                              ), 
                             ),
                           ],
                         ),
@@ -99,7 +99,7 @@ class AppHeader extends StatelessWidget {
                               "ភាសាខ្មែរ",
                               style: TextStyle(
                                 fontSize: 14,
-                              ), // Adjusted text size
+                              ), 
                             ),
                           ],
                         ),
