@@ -88,7 +88,7 @@ final List<DiagnosisModel> recentDiagnoses = [
 // Feature buttons data
 final List<Map<String, String>> featureButtons = [
   {
-    'title': 'Common Diseases',
+    'title': 'Common Disease',
     'icon': 'assets/icons/wheat_icon.png',
     'route': '/diseases',
   },
