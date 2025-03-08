@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
+import '../report/report_screen.dart';
 import '../scan/scan_screen.dart';
 import 'widgets/app_header.dart';
 import 'widgets/diagnosis_controller.dart';
@@ -46,7 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
       case '/report':
-        // TODO: Implement Report Disease screen navigation
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ReportScreen()),
+        );
         break;
     }
   }
