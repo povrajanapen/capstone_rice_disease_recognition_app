@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         // App Header
+        toolbarHeight: 80,
         title: AppHeader(),
         backgroundColor: RiceColors.backgroundAccent,
         elevation: 0,
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Image Carousel
                 NewsSlider(),
                 // const ImageCarousel(),
-                const SizedBox(height: RiceSpacings.s),
+                const SizedBox(height: RiceSpacings.l),
 
                 // Feature Buttons
                 FeatureButtons(onFeaturePressed: _handleFeaturePressed),
