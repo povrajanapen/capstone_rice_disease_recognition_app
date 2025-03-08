@@ -12,6 +12,10 @@ class FeatureButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width; 
+    double buttonWidth = screenWidth * 0.25;
+    double buttonHeight = 30;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: featureButtons.map((button) {
@@ -20,27 +24,43 @@ class FeatureButtons extends StatelessWidget {
             onTap: () => onFeaturePressed(button['route']!),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: RiceSpacings.s / 2),
-              padding: const EdgeInsets.all(RiceSpacings.m),
+              padding: const EdgeInsets.symmetric(vertical: RiceSpacings.l / 2),
               decoration: BoxDecoration(
-                color: RiceColors.neutralLighter,
-                borderRadius: BorderRadius.circular(RiceSpacings.radius),
+                color: RiceColors.neutralLight,
+                borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
+                border: Border.fromBorderSide(BorderSide(width: 0.5, color: RiceColors.neutral))
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
                     button['icon']!,
-                    height: 32,
-                    color: RiceColors.neutral,
+                    height: 90,
                   ),
-                  const SizedBox(height: RiceSpacings.s),
-                  Text(
-                    button['title']!,
-                    style: RiceTextStyles.label.copyWith(
-                      color: RiceColors.textNormal, 
-                      fontWeight: FontWeight.w600, 
+                  const SizedBox(height: RiceSpacings.m),
+                  
+                 SizedBox(
+                    width: buttonWidth,
+                    height: buttonHeight, 
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: RiceColors.neutralLighter,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.fromBorderSide(
+                          BorderSide(width: 0.5, color: RiceColors.neutral),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          button['title']!,
+                          style: RiceTextStyles.label.copyWith(
+                            color: RiceColors.neutralDark,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

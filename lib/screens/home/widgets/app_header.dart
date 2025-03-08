@@ -18,7 +18,7 @@ class AppHeader extends StatelessWidget {
           // Logo
           Image.asset(
             'assets/images/logo.png',
-            height: 56,
+            height: 75,
           ),
 
           // Right side buttons
@@ -26,7 +26,7 @@ class AppHeader extends StatelessWidget {
             children: [
               // Call Expert Button
               Container(
-                height: 40,
+                height: 38,
                 width: 60,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
