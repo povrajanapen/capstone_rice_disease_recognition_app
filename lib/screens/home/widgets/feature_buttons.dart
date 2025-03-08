@@ -17,12 +17,13 @@ class FeatureButtons extends StatelessWidget {
     double buttonHeight = 30;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: featureButtons.map((button) {
         return Expanded(
           child: GestureDetector(
             onTap: () => onFeaturePressed(button['route']!),
             child: Container(
+              width: buttonWidth,
               margin: const EdgeInsets.symmetric(horizontal: RiceSpacings.s / 2),
               padding: const EdgeInsets.symmetric(vertical: RiceSpacings.l / 2),
               decoration: BoxDecoration(
@@ -35,7 +36,7 @@ class FeatureButtons extends StatelessWidget {
                 children: [
                   Image.asset(
                     button['icon']!,
-                    height: 90,
+                    height: 80,
                   ),
                   const SizedBox(height: RiceSpacings.m),
                   
@@ -45,7 +46,7 @@ class FeatureButtons extends StatelessWidget {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: RiceColors.neutralLighter,
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
                         border: Border.fromBorderSide(
                           BorderSide(width: 0.5, color: RiceColors.neutral),
                         ),
@@ -56,6 +57,7 @@ class FeatureButtons extends StatelessWidget {
                           style: RiceTextStyles.label.copyWith(
                             color: RiceColors.neutralDark,
                             fontWeight: FontWeight.bold,
+                            fontSize: 11,
                           ),
                           textAlign: TextAlign.center,
                         ),
