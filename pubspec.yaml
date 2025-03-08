@@ -38,6 +38,7 @@ dependencies:
   image_picker:
   smooth_page_indicator: 1.2.0+3
   carousel_slider: ^5.0.0
+  file_picker: ^8.0.0
 
 
 dev_dependencies:
