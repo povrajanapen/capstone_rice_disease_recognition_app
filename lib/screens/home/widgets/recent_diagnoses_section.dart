@@ -10,10 +10,10 @@ class RecentDiagnosesSection extends StatelessWidget {
   final DiagnosisController controller;
 
   const RecentDiagnosesSection({
-    Key? key,
+    super.key,
     required this.diagnoses,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
