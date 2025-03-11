@@ -39,6 +39,8 @@ dependencies:
   smooth_page_indicator: 1.2.0+3
   carousel_slider: ^5.0.0
   file_picker: ^8.0.0
+  camera: ^0.10.5+2 
+  dio: ^5.8.0+1
 
 
 dev_dependencies:
