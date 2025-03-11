@@ -1,5 +1,6 @@
 import 'package:capstone_dr_rice/screens/scan/result_screen.dart';
 import 'package:capstone_dr_rice/service/disease_api_service.dart';
+import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,7 @@ class _ScanScreenState extends State<ScanScreen> {
   bool _isCameraReady = false;
   File? _selectedImage;
   final ImagePicker _imagePicker = ImagePicker(); // upload image
-  final DiseaseApiService _apiService = DiseaseApiService(); // api service 
+  final DiseaseApiService _apiService = DiseaseApiService(); // api service
   bool _isLoading = false;
 
   // Start the camera
@@ -137,6 +138,7 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
+  //// Build widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,14 +167,12 @@ class _ScanScreenState extends State<ScanScreen> {
                       top: MediaQuery.of(context).size.height * 0.15,
                       left: 0,
                       right: 0,
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           "Position object within frame",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: RiceTextStyles.body.copyWith(
+                            color: RiceColors.neutralLight
+                          )
                         ),
                       ),
                     ),
@@ -186,7 +186,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
               ),
 
-          // App Bar
+      // App Bar
           Positioned(
             top: 0,
             left: 0,
@@ -194,18 +194,14 @@ class _ScanScreenState extends State<ScanScreen> {
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              title: const Text(
-                "Scan Rice",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              title: Text("Scan Rice", style: RiceTextStyles.body.copyWith(
+                color: RiceColors.neutralLighter
+              )),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
           ),
 
-          // Bottom Controls
+      // Bottom Controls
           Positioned(
             bottom: 0,
             left: 0,
@@ -264,7 +260,8 @@ class _ScanScreenState extends State<ScanScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Upload Button
+
+               // Upload Button
                   GestureDetector(
                     onTap: _isLoading ? null : _uploadAndPredict,
                     child: Container(
@@ -289,10 +286,9 @@ class _ScanScreenState extends State<ScanScreen> {
                             _isLoading
                                 ? "Processing..."
                                 : "Upload from Gallery",
-                            style: const TextStyle(
+                            style: RiceTextStyles.label.copyWith(
                               color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            )
                           ),
                         ],
                       ),
