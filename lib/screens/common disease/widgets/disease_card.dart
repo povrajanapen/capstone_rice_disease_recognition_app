@@ -9,11 +9,11 @@ class DiseaseCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const DiseaseCard({
-    Key? key,
+    super.key,
     required this.disease,
     this.imageUrl,
     this.onTap,
-  }) : super(key: key);
+  });
 
 
 

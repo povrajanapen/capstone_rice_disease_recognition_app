@@ -12,11 +12,11 @@ class DiagnosisListItem extends StatelessWidget {
   final VoidCallback onMoreTap;
 
   const DiagnosisListItem({
-    Key? key,
+    super.key,
     required this.diagnosis,
     required this.onTap,
     required this.onMoreTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
