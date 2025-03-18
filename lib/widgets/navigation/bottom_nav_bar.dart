@@ -26,7 +26,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     _widgetOptions = <Widget>[
       const HomeScreen(),
-      const SavedDiagnosisScreen(),
+      const SaveScreen(),
       // const ProfileScreen(),
       const GetStartedScreen(),
     ];
