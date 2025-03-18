@@ -41,6 +41,7 @@ dependencies:
   file_picker: ^8.0.0
   camera: ^0.10.5+2 
   dio: ^5.8.0+1
+  dotted_border: ^2.0.0
 
 
 dev_dependencies:
