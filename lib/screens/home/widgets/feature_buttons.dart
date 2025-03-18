@@ -57,7 +57,7 @@ class FeatureButtons extends StatelessWidget {
                           style: RiceTextStyles.label.copyWith(
                             color: RiceColors.neutralDark,
                             fontWeight: FontWeight.bold,
-                            fontSize: 11,
+                            fontSize: 10,
                           ),
                           textAlign: TextAlign.center,
                         ),
