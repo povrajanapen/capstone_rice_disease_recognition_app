@@ -1,3 +1,4 @@
+import 'dart:io';
 enum DiseaseType {
   bacterial,
   fungal,
@@ -12,6 +13,9 @@ enum DiseasePart {
   grain
 }
 
+
+
+
 class Disease {
   final String id;
   final String name;
@@ -20,6 +24,7 @@ class Disease {
   final DiseasePart? affectedPart;
   final DateTime scanDate;
   final double accuracy;
+  final String? imagePath; 
 
   Disease({
     required this.id,
@@ -29,9 +34,9 @@ class Disease {
     required this.scanDate,
     required this.accuracy,
     this.affectedPart,
+    this.imagePath,
   });
 
-  // Convert JSON to Disease object
   factory Disease.fromJson(Map<String, dynamic> json) {
     return Disease(
       id: json['id'],
@@ -39,22 +44,30 @@ class Disease {
       description: json['description'],
       type: DiseaseType.values.firstWhere((e) => e.name == json['type']),
       scanDate: DateTime.parse(json['scanDate']),
-      accuracy: json['accuracy'].toDouble(), 
-      affectedPart: DiseasePart.values.firstWhere((e) => e.name == json['affectedPart']),
-
+      accuracy: (json['accuracy'] as num).toDouble(),
+      affectedPart: json['affectedPart'] != null
+          ? DiseasePart.values.firstWhere((e) => e.name == json['affectedPart'])
+          : null,
+      imagePath: json['imagePath'],
     );
   }
 
-  // Convert Disease object to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
       'description': description,
-      'type': type.name, // Convert enum to string
+      'type': type.name,
       'scanDate': scanDate.toIso8601String(),
       'accuracy': accuracy,
+      'affectedPart': affectedPart?.name,
+      'imagePath': imagePath,
     };
   }
 
+  int get accuracyPercentage => (accuracy * 100).toInt();
+
+  String get formattedDate {
+    return "${scanDate.day}/${scanDate.month}/${scanDate.year}";
+  }
 }
