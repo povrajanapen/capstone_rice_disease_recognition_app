@@ -1,4 +1,4 @@
-import 'dart:io';
+
 enum DiseaseType {
   bacterial,
   fungal,
