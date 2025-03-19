@@ -1,237 +1,294 @@
 import 'dart:io';
-
+import 'package:capstone_dr_rice/theme/theme.dart';
+import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../provider/saved_diagnosis_provider.dart';
 
-Map<int, String> classMapping = {
-  0: 'Bacterial Blight',
-  1: 'Brown Spot',
-  2: 'Healthy',
-  3: 'Hispa',
-  4: 'Leaf Blast',
-  5: 'Sheath Blight',
-  6: 'Tungro',
-};
-
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   final String imagePath;
   final Map<String, dynamic> result;
 
-  const ResultScreen({super.key, required this.imagePath, required this.result});
+  const ResultScreen({
+    super.key,
+    required this.imagePath,
+    required this.result,
+  });
+
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  int _userRating = 0;
+  bool _isSaved = false;
+  bool _isSpeaking = false;
+
+   
 
   @override
   Widget build(BuildContext context) {
-    final confidence = double.tryParse(result['confidence'].toString()) ?? 0.0;
-    final confidencePercent = '${(confidence * 100).toStringAsFixed(1)}%';
+    final String diseaseName = widget.result['name'] as String;
+    final String description = widget.result['description'] as String;
+    final double accuracy = widget.result['accuracy'] as double;
+
+   // final String diagnosisId = diseaseName.hashCode.toString(); 
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Analysis Result',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.black),
+            onPressed:
+                () => Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
+        ],
       ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image Section
-            Expanded(
-              flex: 5,
-              child: Container(
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.white),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImageSection(),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSuccessMessage(),
+                      const SizedBox(height: 10),
+                      _buildAccuracySection(accuracy),
+                      const SizedBox(height: 15),
+                      Text(diseaseName, style: RiceTextStyles.heading),
+                      _buildDescriptionSection(description),
+                      const SizedBox(height: 15),
+                      const Divider(height: 1),
+                      const SizedBox(height: 24),
+                      _buildRatingSection(),
+                      const SizedBox(height: 15),
+                      _buildSaveButton(),
+                    ],
+                  ),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(File(imagePath), fit: BoxFit.cover),
-                ),
-              ),
+              ],
             ),
-
-            // Result Section
-            Expanded(
-              flex: 4,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Results',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Prediction Card
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: Colors.grey.shade200,
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Classification',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      confidence > 0.8
-                                          ? Colors.green.shade50
-                                          : confidence > 0.5
-                                          ? Colors.orange.shade50
-                                          : Colors.red.shade50,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  confidencePercent,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        confidence > 0.8
-                                            ? Colors.green.shade700
-                                            : confidence > 0.5
-                                            ? Colors.orange.shade700
-                                            : Colors.red.shade700,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            classMapping[result['class']].toString(),
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Confidence Bar
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Confidence',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    confidencePercent,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: LinearProgressIndicator(
-                                  value: confidence,
-                                  minHeight: 8,
-                                  backgroundColor: Colors.grey.shade200,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    confidence > 0.8
-                                        ? Colors.green
-                                        : confidence > 0.5
-                                        ? Colors.orange
-                                        : Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    // Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Scan Again',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+
+
+  //// Image selection ////
+  Widget _buildImageSection() {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Image.file(
+        File(widget.imagePath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey.shade200,
+            child: const Center(
+              child: Icon(Icons.broken_image, size: 64, color: Colors.grey),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
+  //// Successful message widget ////
+  Widget _buildSuccessMessage() {
+    return Row(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF76B947),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.check, color: Colors.white, size: 16),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          "We've successfully identified the disease",
+          style: RiceTextStyles.button.copyWith(
+            fontSize: 13,
+            color: Color(0xFF76B947),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  //// Accuracy widget ////
+  Widget _buildAccuracySection(double accuracy) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "${(accuracy * 100).toInt()}%",
+          style: RiceTextStyles.body.copyWith(
+            fontSize: 38,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF76B947),
+          ),
+        ),
+        Text(
+          "Accuracy",
+          style: RiceTextStyles.button.copyWith(
+            color: Color(0xFF76B947),
+            fontWeight: FontWeight.w100,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  //// Description widget ////
+  Widget _buildDescriptionSection(String description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Description",
+              style: RiceTextStyles.button.copyWith(fontSize: 16),
+            ),
+            const SizedBox(width: 1),
+            IconButton(
+              icon: Icon(
+                _isSpeaking ? Icons.volume_up : Icons.volume_up_outlined,
+                color: Color(0xFF76B947),
+              ),
+              onPressed: () {
+                // Implement text-to-speech functionality here
+                setState(() {
+                  _isSpeaking = !_isSpeaking;
+                });
+              },
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+        const SizedBox(height: 3),
+        Text(
+          description,
+          style: RiceTextStyles.label.copyWith(
+            fontSize: 12,
+            color: Colors.black,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  //// Rating widget ////
+  Widget _buildRatingSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: RiceColors.white,
+        borderRadius: BorderRadius.circular(RiceSpacings.s),
+        border: Border.all(color: RiceColors.neutral, width: 1.0),
+      ),
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        children: [
+          Text(
+            "Is it accurate?",
+            style: RiceTextStyles.button.copyWith(color: Color(0xFF76B947)),
+            textAlign: TextAlign.center,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0.1),
+                child: IconButton(
+                  icon: Icon(
+                    index < _userRating
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: index < _userRating ? Colors.amber : Colors.orange,
+                    size: 26,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _userRating = index + 1;
+                    });
+                  },
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  //// Save button widget ////
+ Widget _buildSaveButton() {
+  return SizedBox(
+    width: double.infinity,
+    child: RiceButton(
+      icon: _isSaved ? Icons.remove_circle_outline : Icons.bookmark_outline,
+      text: _isSaved ? "Remove" : "Save diagnosis",
+      type: _isSaved ? RiceButtonType.secondary : RiceButtonType.primary,
+      onPressed: () {
+        final provider = Provider.of<SavedDiagnosisProvider>(context, listen: false);
+        
+        setState(() {
+          _isSaved = !_isSaved;
+        });
+
+        // Get the data from the result map
+        final String diseaseName = widget.result['name'] as String;
+        final String description = widget.result['description'] as String;
+        final double accuracy = widget.result['accuracy'] as double;
+        
+        // Generate a unique ID if not available
+        final String diagnosisId = widget.result['id'] as String? ?? 
+            DateTime.now().millisecondsSinceEpoch.toString();
+
+        // Save or remove the diagnosis based on whether it's saved
+        if (_isSaved) {
+          provider.saveDiagnosis(diagnosisId, {
+            'name': diseaseName,
+            'description': description,
+            'accuracy': accuracy,
+            'imagePath': widget.imagePath, // Include the image path
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Diagnosis saved successfully')),
+          );
+        } else {
+          provider.removeDiagnosis(diagnosisId);
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Diagnosis removed from saved')),
+          );
+        }
+        print("Diagnosis saved status: $_isSaved");
+      },
+    ),
+  );
+}
 }
