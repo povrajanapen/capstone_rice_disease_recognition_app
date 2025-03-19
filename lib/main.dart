@@ -1,10 +1,20 @@
 import 'package:capstone_dr_rice/widgets/navigation/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'provider/saved_diagnosis_provider.dart';
 import 'theme/theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SavedDiagnosisProvider()), // Provide the provider
+      ],
+      child: MyApp(),
+    ),
+  );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

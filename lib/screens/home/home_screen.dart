@@ -7,6 +7,7 @@ import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
 import '../report/report_screen.dart';
+import '../scan/result_screen.dart';
 import '../scan/scan_screen.dart';
 import 'widgets/app_header.dart';
 import 'widgets/diagnosis_controller.dart';
@@ -43,7 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
       case '/scan':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ScanScreen()),
+      
+          MaterialPageRoute(builder: (context) => ResultScreen(
+              imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
+              result: {
+                'name': 'Healthy',
+                'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
+                'accuracy': 0.95, // Default confidence level
+              },
+            ),
+          ),
         );
         break;
       case '/report':
@@ -73,17 +83,17 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.s),
 
                 // Image Carousel
                 NewsSlider(),
                 // const ImageCarousel(),
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.m),
 
                 // Feature Buttons
                 FeatureButtons(onFeaturePressed: _handleFeaturePressed),
 
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.m),
 
                 // Recent diagnoses section
                 FutureBuilder<List<DiagnosisModel>>(
