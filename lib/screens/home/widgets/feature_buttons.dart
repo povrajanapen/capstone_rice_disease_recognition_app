@@ -14,7 +14,7 @@ class FeatureButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width; 
     double buttonWidth = screenWidth * 0.25;
-    double buttonHeight = 30;
+    double buttonHeight = 25;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -25,7 +25,7 @@ class FeatureButtons extends StatelessWidget {
             child: Container(
               width: buttonWidth,
               margin: const EdgeInsets.symmetric(horizontal: RiceSpacings.s / 2),
-              padding: const EdgeInsets.symmetric(vertical: RiceSpacings.l / 2),
+              padding: const EdgeInsets.symmetric(vertical: RiceSpacings.m / 2),
               decoration: BoxDecoration(
                 color: RiceColors.neutralLight,
                 borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
@@ -36,7 +36,7 @@ class FeatureButtons extends StatelessWidget {
                 children: [
                   Image.asset(
                     button['icon']!,
-                    height: 80,
+                    height: 65,
                   ),
                   const SizedBox(height: RiceSpacings.m),
                   
