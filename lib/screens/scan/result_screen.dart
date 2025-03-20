@@ -271,13 +271,16 @@ class _ResultScreenState extends State<ResultScreen> {
                 });
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Diagnosis saved successfully')),
+                  const SnackBar(content: Text('Diagnosis saved successfully'),
+                  duration: Duration(milliseconds: 800),),
                 );
               } else {
                 provider.removeDiagnosis(diagnosisId);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Diagnosis removed from saved')),
+                  const SnackBar(content: Text('Diagnosis removed from saved'),
+                  duration: Duration(milliseconds: 800),
+                  ),
                 );
               }
             },
