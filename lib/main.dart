@@ -9,7 +9,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => SavedDiagnosisProvider()), 
+        ChangeNotifierProvider(create: (context) => DiagnosisProvider()), 
       ],
       child: MyApp(),
     ),

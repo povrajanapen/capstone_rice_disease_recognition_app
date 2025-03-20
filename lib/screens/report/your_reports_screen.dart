@@ -33,6 +33,7 @@ class YourReportsScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
+      
       body: reports.isEmpty
           ? _buildEmptyState()
           : ListView.builder(

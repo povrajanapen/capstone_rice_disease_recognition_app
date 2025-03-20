@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../provider/saved_diagnosis_provider.dart';
 
 class ResultScreen extends StatefulWidget {
   final String imagePath;
@@ -21,32 +21,25 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   int _userRating = 0;
-  bool _isSaved = false;
+  // bool _isSaved = false;
   bool _isSpeaking = false;
-
-   
 
   @override
   Widget build(BuildContext context) {
-    final String diseaseName = widget.result['name'] as String;
-    final String description = widget.result['description'] as String;
-    final double accuracy = widget.result['accuracy'] as double;
+    
+    final String diseaseName =
+        widget.result['name'] as String? ?? "Unknown Disease";
+    final String description =
+        widget.result['description'] as String? ?? "No description available";
+    final double accuracy = (widget.result['accuracy'] as double?) ?? 0.0;
 
-   // final String diagnosisId = diseaseName.hashCode.toString(); 
-
+    // final String diagnosisId = diseaseName.hashCode.toString();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed:
-                () => Navigator.of(context).popUntil((route) => route.isFirst),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: SizedBox(
@@ -86,7 +79,6 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-
   //// Image selection ////
   Widget _buildImageSection() {
     return SizedBox(
@@ -106,7 +98,6 @@ class _ResultScreenState extends State<ResultScreen> {
       ),
     );
   }
-
 
   //// Successful message widget ////
   Widget _buildSuccessMessage() {
@@ -131,7 +122,6 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-
   //// Accuracy widget ////
   Widget _buildAccuracySection(double accuracy) {
     return Column(
@@ -155,7 +145,6 @@ class _ResultScreenState extends State<ResultScreen> {
       ],
     );
   }
-
 
   //// Description widget ////
   Widget _buildDescriptionSection(String description) {
@@ -197,7 +186,6 @@ class _ResultScreenState extends State<ResultScreen> {
       ],
     );
   }
-
 
   //// Rating widget ////
   Widget _buildRatingSection() {
@@ -242,53 +230,60 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-
   //// Save button widget ////
- Widget _buildSaveButton() {
-  return SizedBox(
-    width: double.infinity,
-    child: RiceButton(
-      icon: _isSaved ? Icons.remove_circle_outline : Icons.bookmark_outline,
-      text: _isSaved ? "Remove" : "Save diagnosis",
-      type: _isSaved ? RiceButtonType.secondary : RiceButtonType.primary,
-      onPressed: () {
-        final provider = Provider.of<SavedDiagnosisProvider>(context, listen: false);
-        
-        setState(() {
-          _isSaved = !_isSaved;
-        });
+  Widget _buildSaveButton() {
+    return Consumer<DiagnosisProvider>(
+      builder: (context, provider, child) {
+        final String diagnosisId = widget.result['id'] as String? ?? '';
 
-        // Get the data from the result map
-        final String diseaseName = widget.result['name'] as String;
-        final String description = widget.result['description'] as String;
-        final double accuracy = widget.result['accuracy'] as double;
-        
-        // Generate a unique ID if not available
-        final String diagnosisId = widget.result['id'] as String? ?? 
-            DateTime.now().millisecondsSinceEpoch.toString();
+        // Check if this ID is already saved
+        final isSaved = context.watch<DiagnosisProvider>().savedDiagnoses.any(
+          (diagnosis) => diagnosis['id'] == diagnosisId,
+        );
+        return SizedBox(
+          width: double.infinity,
+          child: RiceButton(
+            icon:
+                isSaved ? Icons.remove_circle_outline : Icons.bookmark_outline,
+            text: isSaved ? "Remove" : "Save diagnosis",
+            type: isSaved ? RiceButtonType.secondary : RiceButtonType.primary,
+            onPressed: () {
+              final provider = Provider.of<DiagnosisProvider>(
+                context,
+                listen: false,
+              );
 
-        // Save or remove the diagnosis based on whether it's saved
-        if (_isSaved) {
-          provider.saveDiagnosis(diagnosisId, {
-            'name': diseaseName,
-            'description': description,
-            'accuracy': accuracy,
-            'imagePath': widget.imagePath, // Include the image path
-          });
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Diagnosis saved successfully')),
-          );
-        } else {
-          provider.removeDiagnosis(diagnosisId);
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Diagnosis removed from saved')),
-          );
-        }
-        print("Diagnosis saved status: $_isSaved");
+              // Get data from the result map
+              final String diseaseName =
+                  widget.result['name'] as String? ?? "Unknown Disease";
+              final String description =
+                  widget.result['description'] as String? ??
+                  "No description available";
+              final double accuracy =
+                  (widget.result['accuracy'] as double?) ?? 0.0;
+
+              if (!isSaved) {
+                provider.saveDiagnosis(diagnosisId, {
+                  'name': diseaseName,
+                  'description': description,
+                  'accuracy': accuracy,
+                  'imagePath': widget.imagePath, // Include image path
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Diagnosis saved successfully')),
+                );
+              } else {
+                provider.removeDiagnosis(diagnosisId);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Diagnosis removed from saved')),
+                );
+              }
+            },
+          ),
+        );
       },
-    ),
-  );
-}
+    );
+  }
 }
