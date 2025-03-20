@@ -71,13 +71,15 @@ class _ScanScreenState extends State<ScanScreen> {
         _isLoading = false;
       });
 
-      if (mounted) {
+      if (_selectedImage != null) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder:
-                (context) =>
-                    ResultScreen(imagePath: image.path, result: result),
+                (context) => ResultScreen(
+                  imagePath: _selectedImage!.path,
+                  result: result,
+                ),
           ),
         );
       }
@@ -171,8 +173,8 @@ class _ScanScreenState extends State<ScanScreen> {
                         child: Text(
                           "Position object within frame",
                           style: RiceTextStyles.body.copyWith(
-                            color: RiceColors.neutralLight
-                          )
+                            color: RiceColors.neutralLight,
+                          ),
                         ),
                       ),
                     ),
@@ -186,7 +188,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
               ),
 
-      // App Bar
+          // App Bar
           Positioned(
             top: 0,
             left: 0,
@@ -194,14 +196,17 @@ class _ScanScreenState extends State<ScanScreen> {
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              title: Text("Scan Rice", style: RiceTextStyles.body.copyWith(
-                color: RiceColors.neutralLighter
-              )),
+              title: Text(
+                "Scan Rice",
+                style: RiceTextStyles.body.copyWith(
+                  color: RiceColors.neutralLighter,
+                ),
+              ),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
           ),
 
-      // Bottom Controls
+          // Bottom Controls
           Positioned(
             bottom: 0,
             left: 0,
@@ -261,7 +266,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                   const SizedBox(height: 16),
 
-               // Upload Button
+                  // Upload Button
                   GestureDetector(
                     onTap: _isLoading ? null : _uploadAndPredict,
                     child: Container(
@@ -288,7 +293,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                 : "Upload from Gallery",
                             style: RiceTextStyles.label.copyWith(
                               color: Colors.white,
-                            )
+                            ),
                           ),
                         ],
                       ),

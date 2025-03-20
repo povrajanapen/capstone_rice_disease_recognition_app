@@ -26,9 +26,12 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String diseaseName = widget.result['name'] as String;
-    final String description = widget.result['description'] as String;
-    final double accuracy = widget.result['accuracy'] as double;
+    
+    final String diseaseName =
+        widget.result['name'] as String? ?? "Unknown Disease";
+    final String description =
+        widget.result['description'] as String? ?? "No description available";
+    final double accuracy = (widget.result['accuracy'] as double?) ?? 0.0;
 
     // final String diagnosisId = diseaseName.hashCode.toString();
     return Scaffold(
