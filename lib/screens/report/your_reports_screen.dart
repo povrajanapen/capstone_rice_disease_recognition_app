@@ -29,8 +29,8 @@ class YourReportsScreen extends StatelessWidget {
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: RiceColors.neutralDark),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.close, color: RiceColors.neutralDark),
+          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
       body: reports.isEmpty
