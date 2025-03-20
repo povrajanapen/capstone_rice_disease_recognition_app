@@ -3,8 +3,8 @@ import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-
 import '../scan/result_screen.dart';
+
 
 class SaveScreen extends StatelessWidget {
   const SaveScreen({super.key});
