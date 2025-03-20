@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import 'provider/saved_diagnosis_provider.dart';
 import 'theme/theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => SavedDiagnosisProvider()), // Provide the provider
+        ChangeNotifierProvider(create: (context) => SavedDiagnosisProvider()), 
       ],
       child: MyApp(),
     ),
