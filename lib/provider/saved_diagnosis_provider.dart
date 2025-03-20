@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SavedDiagnosisProvider extends ChangeNotifier {
-  List<Map<String, dynamic>> _savedDiagnoses = [];
+  final List<Map<String, dynamic>> _savedDiagnoses = [];
 
   // Getter to fetch saved diagnoses
   List<Map<String, dynamic>> get savedDiagnoses => _savedDiagnoses;
