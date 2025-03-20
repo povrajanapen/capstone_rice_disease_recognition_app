@@ -2,6 +2,7 @@ import 'package:capstone_dr_rice/screens/common%20disease/common_disease_screen.
     show CommonDiseasesScreen;
 import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
 import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
+import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
@@ -44,14 +45,16 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(
           context,
       
-          MaterialPageRoute(builder: (context) => ResultScreen(
-              imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
-              result: {
-                'name': 'Healthy',
-                'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
-                'accuracy': 0.95, // Default confidence level
-              },
-            ),
+          MaterialPageRoute(builder: (context) => ScanScreen(),
+          
+          // ResultScreen(
+          //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
+          //     result: {
+          //       'name': 'Healthy',
+          //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
+          //       'accuracy': 0.95, // Default confidence level
+          //     },
+          //   ),
           ),
         );
         break;
