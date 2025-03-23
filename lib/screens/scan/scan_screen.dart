@@ -172,8 +172,9 @@ class _ScanScreenState extends State<ScanScreen> {
                       child: Center(
                         child: Text(
                           "Position object within frame",
-                          style: RiceTextStyles.body.copyWith(
-                            color: RiceColors.neutralLight,
+                          style: RiceTextStyles.label.copyWith(
+                            color: RiceColors.white,
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -197,9 +198,9 @@ class _ScanScreenState extends State<ScanScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               title: Text(
-                "Scan Rice",
+                "Identify Disease",
                 style: RiceTextStyles.body.copyWith(
-                  color: RiceColors.neutralLighter,
+                  color: RiceColors.white,
                 ),
               ),
               iconTheme: const IconThemeData(color: Colors.white),
