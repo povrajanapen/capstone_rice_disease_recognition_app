@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "615852851202",
+    "project_id": "rice-disease-recognition-app",
+    "storage_bucket": "rice-disease-recognition-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615852851202:android:9ffd535941320515c0e71b",
+        "android_client_info": {
+          "package_name": "com.example.capstone_dr_rice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbUXTJJxYCLw5g91O3BbRd0TDB6L8qlN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

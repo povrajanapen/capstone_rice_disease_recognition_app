@@ -4,18 +4,21 @@ import 'package:provider/provider.dart';
 import 'provider/saved_diagnosis_provider.dart';
 import 'theme/theme.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => DiagnosisProvider()), 
+        ChangeNotifierProvider(create: (context) => DiagnosisProvider()),
       ],
       child: MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -27,6 +30,5 @@ class MyApp extends StatelessWidget {
       theme: riceTheme,
       home: Scaffold(body: BottomNavBar()),
     );
-    
   }
 }
