@@ -138,7 +138,7 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         );
       } else {
-        Navigator.pop(context);
+        Navigator.pop(context, report);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

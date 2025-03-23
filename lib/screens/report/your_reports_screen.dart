@@ -7,10 +7,7 @@ import 'report_screen.dart';
 class YourReportsScreen extends StatelessWidget {
   final List<UserReport> reports;
 
-  const YourReportsScreen({
-    super.key,
-    required this.reports,
-  });
+  const YourReportsScreen({super.key, required this.reports});
 
   @override
   Widget build(BuildContext context) {
@@ -30,42 +27,63 @@ class YourReportsScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close, color: RiceColors.neutralDark),
-          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed:
+              () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
-      
-      body: reports.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
-              itemCount: reports.length,
-              itemBuilder: (context, index) {
-                final report = reports[index];
-                return _buildReportCard(context, report);
-              },
-            ),
+
+      body:
+          reports.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
+                itemCount: reports.length,
+                itemBuilder: (context, index) {
+                  final report = reports[index];
+                  return _buildReportCard(context, report);
+                },
+              ),
     );
   }
 
   Widget _buildReportCard(BuildContext context, UserReport report) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async{
+        final updatedReport = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ReportScreen(
-              existingReport: report,
-              mode: ReportScreenMode.view,
-            ),
+            builder:
+                (context) => ReportScreen(
+                  existingReport: report,
+                  mode: ReportScreenMode.view,
+                ),
           ),
         );
+        if (updatedReport != null) {
+          // Find the index of the existing report
+          int index = reports.indexWhere(
+            (r) => r.disease.id == updatedReport.disease.id,
+          );
+
+          if (index != -1) {
+            reports[index] = updatedReport; // Update the list
+          }
+
+          // Trigger a UI refresh
+          (context as Element).markNeedsBuild();
+        }
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: RiceSpacings.s, horizontal: RiceSpacings.m),
+        margin: EdgeInsets.symmetric(
+          vertical: RiceSpacings.s,
+          horizontal: RiceSpacings.m,
+        ),
         decoration: BoxDecoration(
           color: RiceColors.neutralLighter,
           borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
-          border: Border.fromBorderSide(BorderSide(color: RiceColors.neutral, width: 0.5)),
+          border: Border.fromBorderSide(
+            BorderSide(color: RiceColors.neutral, width: 0.5),
+          ),
         ),
         child: Padding(
           padding: EdgeInsets.all(RiceSpacings.m),
@@ -113,7 +131,9 @@ class YourReportsScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                StringExtension(report.disease.affectedPart!.name).capitalize(),
+                                StringExtension(
+                                  report.disease.affectedPart!.name,
+                                ).capitalize(),
                                 style: RiceTextStyles.label.copyWith(
                                   color: RiceColors.neutral,
                                 ),
@@ -148,11 +168,7 @@ class YourReportsScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.description_outlined,
-            size: 64,
-            color: RiceColors.neutral,
-          ),
+          Icon(Icons.description_outlined, size: 64, color: RiceColors.neutral),
           SizedBox(height: RiceSpacings.m),
           Text(
             "No reports yet",
@@ -164,9 +180,7 @@ class YourReportsScreen extends StatelessWidget {
           SizedBox(height: RiceSpacings.s),
           Text(
             "Your submitted reports will appear here",
-            style: RiceTextStyles.label.copyWith(
-              color: RiceColors.neutral,
-            ),
+            style: RiceTextStyles.label.copyWith(color: RiceColors.neutral),
           ),
         ],
       ),
