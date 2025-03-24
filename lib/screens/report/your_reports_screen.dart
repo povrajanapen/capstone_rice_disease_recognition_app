@@ -1,16 +1,21 @@
 import 'dart:io';
+
+import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/user_report.dart';
 import '../../theme/theme.dart';
 import 'report_screen.dart';
 
 class YourReportsScreen extends StatelessWidget {
   final List<UserReport> reports;
-
   const YourReportsScreen({super.key, required this.reports});
 
   @override
   Widget build(BuildContext context) {
+    final reportProvider = Provider.of<ReportProvider>(context);
+    final reports = reportProvider.reports;
+
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
       appBar: AppBar(
@@ -31,7 +36,6 @@ class YourReportsScreen extends StatelessWidget {
               () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
-
       body:
           reports.isEmpty
               ? _buildEmptyState()
@@ -40,15 +44,19 @@ class YourReportsScreen extends StatelessWidget {
                 itemCount: reports.length,
                 itemBuilder: (context, index) {
                   final report = reports[index];
-                  return _buildReportCard(context, report);
+                  return _buildReportCard(context, report, reportProvider);
                 },
               ),
     );
   }
 
-  Widget _buildReportCard(BuildContext context, UserReport report) {
+  Widget _buildReportCard(
+    BuildContext context,
+    UserReport report,
+    ReportProvider reportProvider,
+  ) {
     return GestureDetector(
-      onTap: () async{
+      onTap: () async {
         final updatedReport = await Navigator.push(
           context,
           MaterialPageRoute(
@@ -60,17 +68,9 @@ class YourReportsScreen extends StatelessWidget {
           ),
         );
         if (updatedReport != null) {
-          // Find the index of the existing report
-          int index = reports.indexWhere(
-            (r) => r.disease.id == updatedReport.disease.id,
-          );
-
-          if (index != -1) {
-            reports[index] = updatedReport; // Update the list
-          }
-
-          // Trigger a UI refresh
-          (context as Element).markNeedsBuild();
+          reportProvider.updateReport(
+            updatedReport,
+          ); // Update the report in the provider
         }
       },
       child: Container(
@@ -131,9 +131,7 @@ class YourReportsScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                StringExtension(
-                                  report.disease.affectedPart!.name,
-                                ).capitalize(),
+                                report.disease.affectedPart!.name.capitalize(),
                                 style: RiceTextStyles.label.copyWith(
                                   color: RiceColors.neutral,
                                 ),
@@ -154,12 +152,73 @@ class YourReportsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  // Remove button
+                  IconButton(
+                    icon: Icon(Icons.delete, color: RiceColors.red),
+                    onPressed: () {
+                      _confirmDelete(context, report, reportProvider);
+                    },
+                  ),
                 ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _confirmDelete(
+    BuildContext context,
+    UserReport report,
+    ReportProvider reportProvider,
+  ) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              "Delete Report",
+              style: RiceTextStyles.body.copyWith(
+                color: RiceColors.neutralDark,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              "Are you sure you want to delete this report?",
+              style: RiceTextStyles.label.copyWith(
+                fontSize: 16,
+                color: RiceColors.neutralDark,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context), // Cancel
+                child: Text(
+                  "Cancel",
+                  style: RiceTextStyles.button.copyWith(
+                    fontSize: 18,
+                    color: RiceColors.neutralDark,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  reportProvider.deleteReport(
+                    report.disease.id,
+                  ); // Delete the report
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text(
+                  "Delete",
+                  style: RiceTextStyles.button.copyWith(
+                    fontSize: 18,
+                    color: RiceColors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
     );
   }
 
@@ -185,11 +244,5 @@ class YourReportsScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

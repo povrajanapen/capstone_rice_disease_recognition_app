@@ -1,6 +1,8 @@
+import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_edit_mode.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_view_mode.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../models/disease.dart';
 import '../../models/user_report.dart';
@@ -128,18 +130,25 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       );
 
-      // If creating a new report, navigate to reports screen
-      // If editing, just go back
+      // Add or update the report in the provider
+      final reportProvider = Provider.of<ReportProvider>(
+        context,
+        listen: false,
+      );
       if (currentMode == ReportScreenMode.create) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => YourReportsScreen(reports: [report]),
-          ),
-        );
+        reportProvider.addReport(report);
       } else {
-        Navigator.pop(context, report);
+        reportProvider.updateReport(report);
       }
+
+      // Navigate to YourReportsScreen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const YourReportsScreen(reports: []),
+        ),
+        (route) => route.isFirst, // Remove all previous routes
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
