@@ -5,6 +5,18 @@ import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+enum PredictionStatus { success, uncertain, failure }
+
+PredictionStatus getPredictionStatus(double accuracy) {
+  if (accuracy >= 0.7) { // 70% confidence level
+    return PredictionStatus.success;
+  } else if (accuracy > 0.0 && accuracy < 0.7) { // 0% < accuracy < 70% uncertain
+    return PredictionStatus.uncertain;
+  } else {
+    return PredictionStatus.failure;
+  }
+}
+
 class ResultScreen extends StatefulWidget {
   final String imagePath;
   final Map<String, dynamic> result;
@@ -26,7 +38,6 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     final String diseaseName =
         widget.result['name'] as String? ?? "Unknown Disease";
     final String description =
@@ -100,22 +111,39 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   //// Successful message widget ////
+  //// Determine prediction status ////
+  PredictionStatus getPredictionStatus(double accuracy) {
+    return accuracy > 0.0 ? PredictionStatus.success : PredictionStatus.failure;
+  }
+
+  //// Success/Failure message widget ////
   Widget _buildSuccessMessage() {
+    final double accuracy = (widget.result['accuracy'] as double?) ?? 0.0;
+    final PredictionStatus status = getPredictionStatus(accuracy);
+
+    final bool isSuccessful = status == PredictionStatus.success;
+
     return Row(
       children: [
         Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF76B947),
+          decoration: BoxDecoration(
+            color: isSuccessful ? const Color(0xFF76B947) : Colors.red,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.check, color: Colors.white, size: 16),
+          child: Icon(
+            isSuccessful ? Icons.check : Icons.close,
+            color: Colors.white,
+            size: 16,
+          ),
         ),
         const SizedBox(width: 8),
         Text(
-          "We've successfully identified the disease",
+          isSuccessful
+              ? "We've successfully identified the disease"
+              : "We couldn't identify the disease",
           style: RiceTextStyles.button.copyWith(
             fontSize: 13,
-            color: Color(0xFF76B947),
+            color: isSuccessful ? const Color(0xFF76B947) : Colors.red,
           ),
         ),
       ],
@@ -124,6 +152,19 @@ class _ResultScreenState extends State<ResultScreen> {
 
   //// Accuracy widget ////
   Widget _buildAccuracySection(double accuracy) {
+    final PredictionStatus status = getPredictionStatus(accuracy);
+
+    Color getColor() {
+      switch (status) {
+        case PredictionStatus.success:
+          return const Color(0xFF76B947); // Green
+        case PredictionStatus.uncertain:
+          return Colors.orange; // Orange for uncertain
+        case PredictionStatus.failure:
+          return Colors.red; // Red for failure
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,13 +173,13 @@ class _ResultScreenState extends State<ResultScreen> {
           style: RiceTextStyles.body.copyWith(
             fontSize: 38,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF76B947),
+            color: getColor(),
           ),
         ),
         Text(
           "Accuracy",
           style: RiceTextStyles.button.copyWith(
-            color: Color(0xFF76B947),
+            color: getColor(),
             fontWeight: FontWeight.w100,
           ),
         ),
@@ -271,15 +312,18 @@ class _ResultScreenState extends State<ResultScreen> {
                 });
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Diagnosis saved successfully'),
-                  duration: Duration(milliseconds: 800),),
+                  const SnackBar(
+                    content: Text('Diagnosis saved successfully'),
+                    duration: Duration(milliseconds: 800),
+                  ),
                 );
               } else {
                 provider.removeDiagnosis(diagnosisId);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Diagnosis removed from saved'),
-                  duration: Duration(milliseconds: 800),
+                  const SnackBar(
+                    content: Text('Diagnosis removed from saved'),
+                    duration: Duration(milliseconds: 800),
                   ),
                 );
               }
