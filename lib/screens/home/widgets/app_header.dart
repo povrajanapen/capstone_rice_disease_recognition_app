@@ -1,3 +1,4 @@
+import 'package:capstone_dr_rice/screens/home/widgets/call_button.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/theme.dart';
 
@@ -25,28 +26,7 @@ class AppHeader extends StatelessWidget {
           Row(
             children: [
               // Call Expert Button
-              Container(
-                height: 38,
-                width: 60,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: RiceColors.neutral,
-                  borderRadius: BorderRadius.circular(
-                    20,
-                  ), 
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.phone_in_talk,
-                      color: RiceColors.white,
-                      size: 20, 
-                    ),
-                  ],
-                ),
-              ),
+              CallButton(phoneNumber: "017889223"),
               const SizedBox(width: RiceSpacings.s / 2),
 
               // Language Dropdown
