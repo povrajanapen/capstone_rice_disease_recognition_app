@@ -2,6 +2,7 @@ import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
+import 'profile_edit_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -62,7 +63,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 leading: const Icon(Icons.person, color: Colors.black),
                 title: Text('Edit Profile', style: RiceTextStyles.button),
                 trailing: const Icon(Icons.edit_outlined),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => ProfileEditScreen(
+                            userName: userName ?? 'No Name',
+                            userEmail: userEmail ?? 'No Email',
+                            userProfileImage: userProfileImage,
+                          ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: RiceSpacings.m),
