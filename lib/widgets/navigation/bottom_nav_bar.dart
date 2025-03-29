@@ -1,11 +1,11 @@
 import 'package:capstone_dr_rice/screens/home/home_screen.dart';
-import 'package:capstone_dr_rice/screens/profile/profile_screen.dart';
+// import 'package:capstone_dr_rice/screens/profile/profile_screen.dart';
 import 'package:capstone_dr_rice/screens/saved%20diagnosis/saved_diagnosis_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 
-// import '../../screens/get started/get_started_screen.dart';
+import '../../screens/get started/get_started_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -27,8 +27,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     _widgetOptions = <Widget>[
       const HomeScreen(),
       const SaveScreen(),
-      const ProfileScreen(),
-      // const GetStartedScreen(),
+      // const ProfileScreen(),
+      const GetStartedScreen(),
     ];
   }
 
