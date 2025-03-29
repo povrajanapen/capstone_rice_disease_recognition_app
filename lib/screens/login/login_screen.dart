@@ -2,20 +2,58 @@ import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
 import '../../widgets/input/textfield_input.dart';
+import '../../service/auth_service.dart';
+import '../../widgets/navigation/bottom_nav_bar.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await AuthService().signInWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          (route) => false, // Remove all previous routes
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: RiceColors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RiceSpacings.radiusLarge),
-        ),
-      ),
-      child: Padding(
+    return Scaffold(
+      backgroundColor: RiceColors.white,
+      body: Padding(
         padding: const EdgeInsets.all(RiceSpacings.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,14 +83,14 @@ class LoginScreen extends StatelessWidget {
             // Email Address TextField
             TextfieldInput(
               label: 'Email Address',
-              controller: TextEditingController(),
+              controller: _emailController,
               hint: 'Enter your email address',
             ),
             const SizedBox(height: RiceSpacings.m),
             // Password TextField
             TextfieldInput(
               label: 'Password',
-              controller: TextEditingController(),
+              controller: _passwordController,
               hint: 'Enter your password',
             ),
             const SizedBox(height: RiceSpacings.s),
@@ -77,14 +115,15 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: RiceSpacings.xl),
             // Login Button
             Center(
-              child: RiceButton(
-                text: 'Login',
-                icon: Icons.login,
-                type: RiceButtonType.primary,
-                onPressed: () {
-                  // Handle login logic here
-                },
-              ),
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : RiceButton(
+                        text: 'Login',
+                        icon: Icons.login,
+                        type: RiceButtonType.primary,
+                        onPressed: _login,
+                      ),
             ),
           ],
         ),

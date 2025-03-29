@@ -1,7 +1,9 @@
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
+import 'package:capstone_dr_rice/widgets/navigation/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
+import '../../service/auth_service.dart';
 import 'profile_edit_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,9 +14,36 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String? userName; // This will be updated based on user login
-  String? userEmail; // This will be updated based on user login
-  String? userProfileImage; // This will be updated based on user login
+  String? userName;
+  String? userEmail;
+  String? userPhotoURL;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  void _fetchUserData() {
+    final user = AuthService().getCurrentUser();
+    if (user != null) {
+      setState(() {
+        userName = user.displayName ?? 'No Name';
+        userEmail = user.email ?? 'No Email';
+        userPhotoURL = user.photoURL;
+      });
+    }
+  }
+
+  Future<void> _logout() async {
+    await AuthService().signOut();
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +67,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CircleAvatar(
               radius: 50,
               backgroundImage:
-                  userProfileImage != null
-                      ? AssetImage(userProfileImage!)
-                      : AssetImage('assets/images/placeholder.png'),
+                  userPhotoURL != null && userPhotoURL!.startsWith('http')
+                      ? NetworkImage(
+                        userPhotoURL!,
+                      ) // Use NetworkImage if photoURL is a valid URL
+                      : const AssetImage(
+                            'assets/images/profile_placeholder.png',
+                          )
+                          as ImageProvider,
             ),
             const SizedBox(height: RiceSpacings.m),
             Text(
@@ -63,18 +97,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 leading: const Icon(Icons.person, color: Colors.black),
                 title: Text('Edit Profile', style: RiceTextStyles.button),
                 trailing: const Icon(Icons.edit_outlined),
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => ProfileEditScreen(
                             userName: userName ?? 'No Name',
                             userEmail: userEmail ?? 'No Email',
-                            userProfileImage: userProfileImage,
+                            userProfileImage: userPhotoURL,
                           ),
                     ),
                   );
+
+                  if (result != null && mounted) {
+                    setState(() {
+                      userName = result['name'];
+                      userEmail = result['email'];
+                    });
+                  }
                 },
               ),
             ),
@@ -109,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               text: 'Logout',
               icon: Icons.logout,
               type: RiceButtonType.secondary,
-              onPressed: () {},
+              onPressed: _logout,
             ),
           ],
         ),

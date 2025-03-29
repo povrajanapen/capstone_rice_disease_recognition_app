@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
@@ -35,6 +36,100 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     _nameController.text = widget.userName;
     _emailController.text = widget.userEmail;
     _profileImagePath = widget.userProfileImage;
+  }
+
+  Future<void> _updateProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('User not logged in')));
+      }
+      return;
+    }
+
+    try {
+      // Update name
+      if (_nameController.text.trim().isNotEmpty &&
+          _nameController.text.trim() != widget.userName) {
+        await user.updateDisplayName(_nameController.text.trim());
+      }
+
+      // Update email
+      if (_emailController.text.trim().isNotEmpty &&
+          _emailController.text.trim() != widget.userEmail) {
+        await user.verifyBeforeUpdateEmail(_emailController.text.trim());
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Verification email sent. Please verify your new email.',
+              ),
+            ),
+          );
+        }
+      }
+
+      // Update password
+      if (_newPasswordController.text.trim().isNotEmpty &&
+          _newPasswordController.text.trim() ==
+              _confirmPasswordController.text.trim()) {
+        await user.updatePassword(_newPasswordController.text.trim());
+      } else if (_newPasswordController.text.trim() !=
+          _confirmPasswordController.text.trim()) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Passwords do not match')),
+          );
+        }
+        return;
+      }
+
+      // Reload user to reflect changes
+      await user.reload();
+
+      // Navigate back to ProfileScreen
+      if (mounted) {
+        Navigator.pop(context, {
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+        });
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'email-already-in-use') {
+        errorMessage = 'The email address is already in use.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'The email address is not valid.';
+      } else if (e.code == 'weak-password') {
+        errorMessage = 'The password is too weak.';
+      } else if (e.code == 'requires-recent-login') {
+        errorMessage =
+            'This operation is sensitive and requires recent authentication. Please log in again.';
+      } else {
+        errorMessage = 'An unknown error occurred. Please try again.';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update profile: $e')));
+      }
+    }
   }
 
   Future<void> _pickImage() async {
@@ -80,7 +175,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     backgroundImage:
                         _profileImagePath != null
                             ? AssetImage(_profileImagePath!)
-                            : AssetImage('assets/images/placeholder.png'),
+                            : const AssetImage(
+                              'assets/images/profile_placeholder.png',
+                            ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -139,9 +236,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 text: 'Update',
                 icon: Icons.edit,
                 type: RiceButtonType.primary,
-                onPressed: () {
-                  // Handle update logic here
-                },
+                onPressed: _updateProfile,
               ),
             ),
           ],

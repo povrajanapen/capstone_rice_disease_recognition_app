@@ -1,22 +1,86 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
 import '../../widgets/input/textfield_input.dart';
+import '../../service/auth_service.dart';
+import '../../widgets/navigation/bottom_nav_bar.dart';
 import '../login/login_screen.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _signup() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await AuthService().registerWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (user != null) {
+        await user.updateDisplayName(_nameController.text.trim());
+        await user.updatePhotoURL('assets/images/profile_placeholder.png');
+        await user.reload(); // Reload user to reflect changes
+      }
+
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          (route) => false, // Remove all previous routes
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'email-already-in-use') {
+        errorMessage = 'The email address is already in use.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'The email address is not valid.';
+      } else if (e.code == 'weak-password') {
+        errorMessage = 'The password is too weak.';
+      } else {
+        errorMessage = 'An unknown error occurred. Please try again.';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: RiceColors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RiceSpacings.radiusLarge),
-        ),
-      ),
-      child: Padding(
+    return Scaffold(
+      backgroundColor: RiceColors.white,
+      body: Padding(
         padding: const EdgeInsets.all(RiceSpacings.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +91,7 @@ class SignupScreen extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context); // Close the modal
                 },
               ),
             ),
@@ -46,34 +110,35 @@ class SignupScreen extends StatelessWidget {
             // Full Name TextField
             TextfieldInput(
               label: 'Full Name',
-              controller: TextEditingController(),
+              controller: _nameController,
               hint: 'Enter your full name',
             ),
             const SizedBox(height: RiceSpacings.m),
             // Email Address TextField
             TextfieldInput(
               label: 'Email Address',
-              controller: TextEditingController(),
+              controller: _emailController,
               hint: 'Enter your email address',
             ),
             const SizedBox(height: RiceSpacings.m),
             // Password TextField
             TextfieldInput(
               label: 'Password',
-              controller: TextEditingController(),
+              controller: _passwordController,
               hint: 'Enter your password',
             ),
             const SizedBox(height: RiceSpacings.xl),
             // Create an Account Button
             Center(
-              child: RiceButton(
-                text: 'Create an Account',
-                icon: Icons.person_add,
-                type: RiceButtonType.primary,
-                onPressed: () {
-                  // Handle create account logic here
-                },
-              ),
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : RiceButton(
+                        text: 'Create an Account',
+                        icon: Icons.person_add,
+                        type: RiceButtonType.primary,
+                        onPressed: _signup,
+                      ),
             ),
             const SizedBox(height: RiceSpacings.l),
             // Already have an account? Login
