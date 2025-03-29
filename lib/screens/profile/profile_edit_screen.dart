@@ -3,7 +3,7 @@ import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:capstone_dr_rice/screens/report/widgets/textfield_input.dart';
+import 'package:capstone_dr_rice/widgets/input/textfield_input.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final String userName;
