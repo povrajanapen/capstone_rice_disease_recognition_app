@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
+import '../login/login_screen.dart';
 import '../signup/signup_screen.dart';
 
 class GetStartedScreen extends StatelessWidget {
@@ -24,7 +25,12 @@ class GetStartedScreen extends StatelessWidget {
                 text: 'Login',
                 icon: Icons.login,
                 onPressed: () {
-                  // Handle login button press
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const LoginScreen(),
+                  );
                 },
               ),
             ),

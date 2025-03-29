@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
 import '../../widgets/input/textfield_input.dart';
+import '../login/login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -90,7 +91,12 @@ class SignupScreen extends StatelessWidget {
                   const SizedBox(width: RiceSpacings.s / 2),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to Login screen
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const LoginScreen(),
+                      );
                     },
                     child: Text(
                       'Login',
