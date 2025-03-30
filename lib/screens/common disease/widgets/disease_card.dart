@@ -105,36 +105,7 @@ class DiseaseCard extends StatelessWidget {
                   ),
                 ],
               ),
-
-              SizedBox(height: RiceSpacings.m),
-
-              // Accuracy indicator
-              Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: RiceColors.primary,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.check,
-                      color: RiceColors.white,
-                      size: 16,
-                    ),
-                  ),
-
-                  // --- Accuracy rate text ---
-                  SizedBox(width: RiceSpacings.s),
-                  Text(
-                    'Detection accuracy rate ${(disease.accuracy * 100).toInt()}%',
-                    style: RiceTextStyles.label.copyWith(
-                      color: RiceColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+              
             ],
           ),
         ),

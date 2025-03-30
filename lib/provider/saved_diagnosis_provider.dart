@@ -1,96 +1,43 @@
+import 'package:capstone_dr_rice/repository/data_storage.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:capstone_dr_rice/models/disease.dart';
 
-class DiagnosisProvider extends ChangeNotifier {
-  final List<Map<String, dynamic>> _savedDiagnoses = [];
+class DiagnosisProvider with ChangeNotifier {
+  List<Map<String, dynamic>> _savedDiagnoses = [];
 
-  // Constructor - load saved diagnoses when provider is initialized
+  List<Map<String, dynamic>> get savedDiagnoses => _savedDiagnoses;
+
   DiagnosisProvider() {
-    _loadSavedDiagnoses();
+    _loadDiagnoses();
   }
 
-  // Getter to fetch saved diagnoses
-  List<Map<String, dynamic>> get savedDiagnoses => List.unmodifiable(_savedDiagnoses);
-
-  // Check if a diagnosis is already saved
-  bool isDiagnosisSaved(String diagnosisId) {
-    return _savedDiagnoses.any((item) => item['id'] == diagnosisId);
-  }
-
-  // Add or update diagnosis in the saved list
-  Future<void> saveDiagnosis(String diagnosisId, Map<String, dynamic> diagnosis) async {
-    try {
-      final index = _savedDiagnoses.indexWhere((item) => item['id'] == diagnosisId);
-
-      final Map<String, dynamic> diagnosisToSave = {
-        'id': diagnosisId,
-        'name': diagnosis['name'] ?? 'Unknown Disease',
-        'description': diagnosis['description'] ?? 'No description available',
-        'accuracy': diagnosis['accuracy'] ?? 0.0,
-        'imagePath': diagnosis['imagePath'] ?? '',
-        'timestamp': diagnosis['timestamp'] ?? DateTime.now().toIso8601String(),
-      };
-
-      if (index == -1) {
-        _savedDiagnoses.add(diagnosisToSave);
-      } else {
-        _savedDiagnoses[index] = diagnosisToSave;
-      }
-
-      await _persistSavedDiagnoses();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error saving diagnosis: $e');
-    }
-  }
-
-  // Remove a specific diagnosis
-  Future<void> removeDiagnosis(String diagnosisId) async {
-    _savedDiagnoses.removeWhere((item) => item['id'] == diagnosisId);
-    await _persistSavedDiagnoses();
+  Future<void> _loadDiagnoses() async {
+    final diagnoses = await DiagnosesStorage.loadDiagnoses();
+    _savedDiagnoses =
+        diagnoses
+            .map(
+              (diagnose) => {
+                'id': diagnose.id,
+                'name': diagnose.disease.name,
+                'description': diagnose.disease.description,
+                'accuracy': diagnose.confidence,
+                'imagePath': diagnose.imagePath,
+              },
+            )
+            .toList();
     notifyListeners();
   }
 
-  // Get recent diagnoses (sorted by newest)
-  List<Map<String, dynamic>> getRecentDiagnoses({int limit = 3}) {
-    final sortedList = List<Map<String, dynamic>>.from(_savedDiagnoses);
-    sortedList.sort((a, b) => (b['timestamp'] ?? '').compareTo(a['timestamp'] ?? ''));
-    return sortedList.take(limit).toList();
+  void addDiagnosis(Diagnose diagnose, String imagePath) async {
+    await DiagnosesStorage.addDiagnosis(diagnose, imagePath);
+    await _loadDiagnoses(); // Reload to sync with storage
   }
 
-  // Persist diagnoses to SharedPreferences
-  Future<void> _persistSavedDiagnoses() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(_savedDiagnoses);
-      await prefs.setString('saved_diagnoses', jsonString);
-    } catch (e) {
-      debugPrint('Error saving diagnoses to SharedPreferences: $e');
-    }
-  }
-
-  // Load diagnoses from SharedPreferences
-  Future<void> _loadSavedDiagnoses() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString('saved_diagnoses');
-
-      if (jsonString != null && jsonString.isNotEmpty) {
-        final List<dynamic> decoded = jsonDecode(jsonString);
-        _savedDiagnoses.clear();
-        _savedDiagnoses.addAll(decoded.map((e) => Map<String, dynamic>.from(e)));
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error loading diagnoses from SharedPreferences: $e');
-    }
-  }
-
-  // Clear all saved diagnoses
-  Future<void> clearAllSavedDiagnoses() async {
-    _savedDiagnoses.clear();
-    await _persistSavedDiagnoses();
-    notifyListeners();
+  void removeDiagnosis(String? id) async {
+    if (id == null) return;
+    final diagnoses = await DiagnosesStorage.loadDiagnoses();
+    diagnoses.removeWhere((d) => d.id == id);
+    await DiagnosesStorage.saveDiagnoses(diagnoses);
+    await _loadDiagnoses(); // Reload to sync with storage
   }
 }

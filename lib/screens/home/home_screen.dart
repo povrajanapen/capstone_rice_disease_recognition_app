@@ -8,7 +8,6 @@ import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
 import '../report/report_screen.dart';
-import '../scan/result_screen.dart';
 import 'widgets/app_header.dart';
 import 'widgets/diagnosis_controller.dart';
 import 'widgets/recent_diagnoses_section.dart';

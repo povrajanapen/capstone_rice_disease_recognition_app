@@ -1,11 +1,11 @@
 
 
-import '../dummy_data/dummy_data.dart';
 import '../models/diagnosis_model.dart';
 
 class DiagnosisService {
   // In a real app, this would connect to an API or local database
   // For now, we'll use the dummy data
+  List<DiagnosisModel> recentDiagnoses = [];
 
   // Get recent diagnoses
   Future<List<DiagnosisModel>> getRecentDiagnoses() async {
