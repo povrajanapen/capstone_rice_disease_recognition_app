@@ -2,12 +2,12 @@ import 'package:capstone_dr_rice/screens/common%20disease/common_disease_screen.
     show CommonDiseasesScreen;
 import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
 import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
+import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
 import '../report/report_screen.dart';
-import '../scan/scan_screen.dart';
 import 'widgets/app_header.dart';
 import 'widgets/diagnosis_controller.dart';
 import 'widgets/recent_diagnoses_section.dart';
@@ -43,7 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
       case '/scan':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ScanScreen()),
+      
+          MaterialPageRoute(builder: (context) => ScanScreen(),
+          
+          // ResultScreen(
+          //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
+          //     result: {
+          //       'name': 'Healthy',
+          //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
+          //       'accuracy': 0.95, // Default confidence level
+          //     },
+          //   ),
+          ),
         );
         break;
       case '/report':
@@ -73,17 +84,17 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.s),
 
                 // Image Carousel
                 NewsSlider(),
                 // const ImageCarousel(),
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.m),
 
                 // Feature Buttons
                 FeatureButtons(onFeaturePressed: _handleFeaturePressed),
 
-                const SizedBox(height: RiceSpacings.l),
+                const SizedBox(height: RiceSpacings.m),
 
                 // Recent diagnoses section
                 FutureBuilder<List<DiagnosisModel>>(

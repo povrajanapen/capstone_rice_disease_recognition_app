@@ -1,39 +1,160 @@
+import 'package:capstone_dr_rice/provider/report_provider.dart';
+import 'package:capstone_dr_rice/screens/report/widgets/report_edit_mode.dart';
+import 'package:capstone_dr_rice/screens/report/widgets/report_view_mode.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/action/rice_button.dart';
-import 'widgets/file_picker_widget.dart';
+import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../models/disease.dart';
+import '../../models/user_report.dart';
+import 'your_reports_screen.dart';
+
+// Define the enum for screen modes
+enum ReportScreenMode { create, view, edit }
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({super.key});
+  final UserReport? existingReport;
+  final ReportScreenMode mode;
+
+  const ReportScreen({
+    super.key,
+    this.existingReport,
+    this.mode = ReportScreenMode.create, // Default to creation mode
+  });
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  String? selectedFilePath;
-  DiseasePart selectedDiseasePart = DiseasePart.leaf;
+  late TextEditingController nameController;
+  late TextEditingController descriptionController;
+  String? selectedImagePath;
+  late DiseasePart selectedDiseasePart;
+  late ReportScreenMode currentMode;
 
-  void onFileSelected(String? filePath) {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with existing data if available
+    if (widget.existingReport != null) {
+      nameController = TextEditingController(
+        text: widget.existingReport!.disease.name,
+      );
+      descriptionController = TextEditingController(
+        text: widget.existingReport!.disease.description,
+      );
+      selectedDiseasePart =
+          widget.existingReport!.disease.affectedPart ?? DiseasePart.leaves;
+      selectedImagePath = widget.existingReport!.imagePath;
+    } else {
+      nameController = TextEditingController();
+      descriptionController = TextEditingController();
+      selectedDiseasePart = DiseasePart.leaves;
+    }
+
+    // Set initial mode
+    currentMode = widget.mode;
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  void onImageSelected(String? imagePath) {
     setState(() {
-      selectedFilePath = filePath;
+      selectedImagePath = imagePath;
+    });
+  }
+
+  void toggleMode() {
+    setState(() {
+      // Toggle between view and edit modes
+      currentMode =
+          currentMode == ReportScreenMode.view
+              ? ReportScreenMode.edit
+              : ReportScreenMode.view;
+    });
+  }
+
+  void onDiseasePartChanged(DiseasePart newPart) {
+    setState(() {
+      selectedDiseasePart = newPart;
     });
   }
 
   void submitReport() {
-    if (selectedFilePath != null &&
+    final isComplete =
+        selectedImagePath != null &&
         nameController.text.isNotEmpty &&
-        descriptionController.text.isNotEmpty) {
-      ScaffoldMessenger.of(
+        descriptionController.text.isNotEmpty;
+
+    if (isComplete) {
+      // Create or update disease
+      final disease = Disease(
+        id: widget.existingReport?.disease.id ?? DateTime.now().toString(),
+        type: widget.existingReport?.disease.type ?? DiseaseType.bacterial,
+        name: nameController.text,
+        description: descriptionController.text,
+        symptoms: '',
+        management: '',
+        affectedPart: selectedDiseasePart,
+      );
+
+      // Create the report with the image path
+      final report = UserReport(
+        disease: disease,
+        imagePath: selectedImagePath!,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            currentMode == ReportScreenMode.create
+                ? "Report submitted successfully!"
+                : "Report updated successfully!",
+          ),
+        ),
+      );
+
+      // Add or update the report in the provider
+      final reportProvider = Provider.of<ReportProvider>(
         context,
-      ).showSnackBar(SnackBar(content: Text("Report submitted successfully!")));
+        listen: false,
+      );
+      if (currentMode == ReportScreenMode.create) {
+        reportProvider.addReport(report);
+      } else {
+        reportProvider.updateReport(report);
+      }
+
+      // Navigate to YourReportsScreen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const YourReportsScreen(reports: []),
+        ),
+        (route) => route.isFirst, // Remove all previous routes
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please fill in all fields and select a file.")),
+        SnackBar(
+          content: Text("Please fill in all fields and select an image."),
+        ),
       );
+    }
+  }
+
+  String _getAppBarTitle() {
+    switch (currentMode) {
+      case ReportScreenMode.create:
+        return "Report Disease";
+      case ReportScreenMode.view:
+        return "Report Details";
+      case ReportScreenMode.edit:
+        return "Edit Report";
     }
   }
 
@@ -43,138 +164,43 @@ class _ReportScreenState extends State<ReportScreen> {
       backgroundColor: RiceColors.backgroundAccent,
       appBar: AppBar(
         title: Text(
-          "Report Disease",
+          _getAppBarTitle(),
           style: RiceTextStyles.body.copyWith(color: RiceColors.neutralDark),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: RiceColors.neutralDark),
+        actions:
+            widget.existingReport != null
+                ? [
+                  IconButton(
+                    icon: Icon(
+                      currentMode == ReportScreenMode.view
+                          ? Icons.edit
+                          : Icons.visibility,
+                      color: RiceColors.neutralDark,
+                    ),
+                    onPressed: toggleMode,
+                  ),
+                ]
+                : null,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(RiceSpacings.m),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FilePickerWidget(onFileSelected: onFileSelected),
-            SizedBox(height: RiceSpacings.m),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Name",
-                  style: RiceTextStyles.label.copyWith(
-                    fontSize: 16,
-                  ), // Increased font size
-                ),
-                SizedBox(height: RiceSpacings.s),
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    hintText: "Type here...",
-                    filled: true,
-                    fillColor: RiceColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(RiceSpacings.radius),
-                    ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(RiceSpacings.m),
+          child:
+              currentMode == ReportScreenMode.view
+                  ? ReportViewMode(existingReport: widget.existingReport!)
+                  : ReportEditMode(
+                    selectedImagePath: selectedImagePath,
+                    onImageSelected: onImageSelected,
+                    nameController: nameController,
+                    descriptionController: descriptionController,
+                    selectedDiseasePart: selectedDiseasePart,
+                    onDiseasePartChanged: onDiseasePartChanged,
+                    submitReport: submitReport,
+                    currentMode: currentMode,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: RiceSpacings.m),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Description",
-                  style: RiceTextStyles.label.copyWith(
-                    fontSize: 16,
-                  ), // Increased font size
-                ),
-                SizedBox(height: RiceSpacings.s),
-                TextField(
-                  controller: descriptionController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: "Type here...",
-                    filled: true,
-                    fillColor: RiceColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(RiceSpacings.radius),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: RiceSpacings.m),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Select Disease Type",
-                  style: RiceTextStyles.label.copyWith(
-                    fontSize: 16,
-                  ), // Increased font size
-                ),
-                SizedBox(height: RiceSpacings.s),
-                DropdownButtonFormField<DiseasePart>(
-                  value: selectedDiseasePart,
-                  items:
-                      DiseasePart.values.map((DiseasePart part) {
-                        return DropdownMenuItem<DiseasePart>(
-                          value: part,
-                          child: Row(
-                            children: [
-                              Icon(Icons.eco, color: RiceColors.primary),
-                              SizedBox(width: 8),
-                              Text(
-                                part.name.capitalize(),
-                                style: RiceTextStyles.body.copyWith(
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedDiseasePart = value!;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: RiceColors.primary),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: RiceColors.primary),
-                    ),
-                  ),
-                  dropdownColor: RiceColors.white,
-                  selectedItemBuilder: (BuildContext context) {
-                    return DiseasePart.values.map<Widget>((DiseasePart part) {
-                      return Row(
-                        children: [
-                          Icon(Icons.eco, color: RiceColors.primary),
-                          SizedBox(width: 8),
-                          Text(
-                            part.name.capitalize(),
-                            style: RiceTextStyles.body.copyWith(fontSize: 18),
-                          ),
-                        ],
-                      );
-                    }).toList();
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: RiceSpacings.xl),
-            RiceButton(
-              text: "Submit",
-              icon: Icons.upload,
-              onPressed: submitReport,
-              type: RiceButtonType.primary,
-            ),
-          ],
         ),
       ),
     );
