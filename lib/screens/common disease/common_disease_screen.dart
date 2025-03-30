@@ -1,11 +1,25 @@
-import 'package:capstone_dr_rice/dummy_data/dummy_data.dart';
+import 'package:capstone_dr_rice/screens/common%20disease/widgets/detail_disease_card.dart';
 import 'package:capstone_dr_rice/screens/common%20disease/widgets/disease_card.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class CommonDiseasesScreen extends StatelessWidget {
+import '../../provider/diseases_provider.dart';
+
+class CommonDiseasesScreen extends StatefulWidget {
   const CommonDiseasesScreen({super.key});
+
+  @override
+  State<CommonDiseasesScreen> createState() => _CommonDiseasesScreenState();
+}
+
+class _CommonDiseasesScreenState extends State<CommonDiseasesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<DiseaseProvider>(context, listen: false).fetchDiseases();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,35 +37,65 @@ class CommonDiseasesScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: IconThemeData(color: RiceColors.neutralDark),
       ),
-      
-      body: Container(
-        color: RiceColors.backgroundAccent,
-        child: Column(
-          children: [
-            RiceDivider(),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
-                itemCount: diseases.length, // for now Using the dummy data
-                itemBuilder: (context, index) {
-                  final disease = diseases[index];
-                  
-                  // Find a matching diagnosis to get the image URL
-                  final matchingDiagnosis = recentDiagnoses.firstWhere(
-                    (diagnosis) => diagnosis.disease.id == disease.id,
-                    orElse: () => recentDiagnoses.first, // - Fallback to the first diagnosis if no match is found
+
+      body: Column(
+        children: [
+          RiceDivider(),
+          Expanded(
+            child: Consumer<DiseaseProvider>(
+              builder: (context, diseaseProvider, child) {
+                if (diseaseProvider.isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (diseaseProvider.diseases.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No diseases found.',
+                      style: RiceTextStyles.body.copyWith(
+                        color: RiceColors.neutralDark,
+                      ),
+                    ),
                   );
-                  
-                  return DiseaseCard(
-                    disease: disease,
-                    imageUrl: matchingDiagnosis.imageUrl,
-                  );
-                },
-              ),
+                }
+
+                return
+                //  Container(
+                //   color: RiceColors.backgroundAccent,
+                //   child: Column(
+                //     children: [
+                // RiceDivider(),
+                //     Expanded(
+                //     child:
+                ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
+                  itemCount: diseaseProvider.diseases.length,
+                  itemBuilder: (context, index) {
+                    final disease = diseaseProvider.diseases[index];
+
+                    return DiseaseCard(
+                      disease: disease,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DetailDiseaseCard(disease: disease,),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+                //    ),
+                //   ],
+                //    ),
+                //     );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+ 
 }
