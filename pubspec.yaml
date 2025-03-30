@@ -45,7 +45,7 @@ dependencies:
   uuid: ^4.5.1
   google_fonts: ^6.2.1
   provider: ^6.1.2
-  shared_preferences: ^2.5.2
+  shared_preferences: ^2.5.3
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
   cloud_firestore: ^5.5.0
@@ -80,6 +80,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/data/diseases.json
   
 
   # An image asset can refer to one or more resolution-specific "variants", see
