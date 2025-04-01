@@ -1,4 +1,5 @@
 import 'package:capstone_dr_rice/models/disease_data.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
 import 'package:capstone_dr_rice/screens/scan/widgets/detail_card_widget.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
@@ -23,22 +24,27 @@ class ResultScreen extends StatefulWidget {
   _ResultScreenState createState() => _ResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen>
-    with SingleTickerProviderStateMixin {
+class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    flutterTts.setLanguage("en-US");
-    flutterTts.setPitch(1.0);
     _tabController = TabController(length: 2, vsync: this);
+    _initTts();
+  }
+
+  Future<void> _initTts() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    await flutterTts.setLanguage(languageProvider.languageCode); // Dynamic language
+    await flutterTts.setPitch(1.0);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    flutterTts.stop(); // Clean up TTS
     super.dispose();
   }
 
@@ -48,7 +54,7 @@ class _ResultScreenState extends State<ResultScreen>
     return diseaseMap[diseaseName] ??
         Disease(
           id: 'unknown',
-          name: diseaseName,
+          name: 'Unknown',
           description: 'Unknown disease',
           type: DiseaseType.bacterial,
           symptoms: 'No specific information available.',
@@ -57,6 +63,7 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   Future<void> _saveDiagnosis(BuildContext context) async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final disease = await _getDiseaseFromResult();
     final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
     final diagnose = Diagnose(
@@ -64,24 +71,30 @@ class _ResultScreenState extends State<ResultScreen>
       disease: disease,
       timestamp: DateTime.now(),
       imagePath: widget.imagePath,
-      confidence:
-          double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
+      confidence: double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
       userId: null,
     );
-    context.read<DiagnosisProvider>().addDiagnosis(
-      diagnose,
-      widget.imagePath,
+    context.read<DiagnosisProvider>().addDiagnosis(diagnose, widget.imagePath);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(languageProvider.translate('Diagnosis saved'))),
     );
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Diagnosis saved')));
   }
 
   @override
   Widget build(BuildContext context) {
-    final confidence =
-        double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final confidence = double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
     final confidencePercent = '${(confidence * 100).toStringAsFixed(2)}%';
+
+    // Fallback disease with translations
+    final fallbackDisease = Disease(
+      id: languageProvider.translate('unknown'),
+      name: languageProvider.translate('Unknown'),
+      description: languageProvider.translate('Unknown disease'),
+      type: DiseaseType.bacterial,
+      symptoms: languageProvider.translate('No info'),
+      management: languageProvider.translate('No info'),
+    );
 
     return Scaffold(
       backgroundColor: RiceColors.white,
@@ -89,91 +102,63 @@ class _ResultScreenState extends State<ResultScreen>
         backgroundColor: RiceColors.white,
         elevation: 0,
         title: Text(
-          'Analysis Result',
-          style: TextStyle(color: RiceColors.neutralDark, fontWeight: FontWeight.w600),
+          languageProvider.translate('Analysis Result'),
+          style: TextStyle(
+            color: RiceColors.neutralDark,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        iconTheme:  IconThemeData(color: RiceColors.neutralDark),
+        iconTheme: IconThemeData(color: RiceColors.neutralDark),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Image Section
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 10,
-                ), // Added padding around image
+                padding: const EdgeInsets.all(RiceSpacings.m), // Consistent spacing
                 child: SizedBox(
-                  width:
-                      MediaQuery.of(context).size.width *
-                      0.98, 
+                  width: MediaQuery.of(context).size.width, // Full width
                   height: MediaQuery.of(context).size.height * 0.35,
                   child: ResultImageWidget(imagePath: widget.imagePath),
                 ),
               ),
-              // Results Section
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(RiceSpacings.m),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 4.0,
-                      ), 
-                      child: Text(
-                        'Results',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: RiceColors.neutralDark,
-                        ),
+                    Text(
+                      languageProvider.translate('Results'),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: RiceColors.neutralDark,
                       ),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Prediction Card
-
+                    const SizedBox(height: RiceSpacings.m),
                     PredictionCardWidget(
                       result: widget.result,
                       confidence: confidence,
                       confidencePercent: confidencePercent,
                       onSave: () => _saveDiagnosis(context),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Details Section
-
+                    const SizedBox(height: RiceSpacings.m),
                     FutureBuilder<Disease>(
                       future: _getDiseaseFromResult(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
                         }
-                        final disease =
-                            snapshot.data ??
-                            Disease(
-                              id: 'unknown',
-                              name: 'Unknown',
-                              description: 'Unknown disease',
-                              type: DiseaseType.bacterial,
-                              symptoms: 'No info',
-                              management: 'No info',
-                            );
+                        final disease = snapshot.data ?? fallbackDisease;
                         return DetailCardWidget(
                           tabController: _tabController,
-                           flutterTts: flutterTts,
-                            disease: disease);
+                          flutterTts: flutterTts,
+                          disease: disease,
+                        );
                       },
                     ),
-                    const SizedBox(height: 16),
-
-
+                    const SizedBox(height: RiceSpacings.l),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -186,16 +171,16 @@ class _ResultScreenState extends State<ResultScreen>
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Scan Again',
-                          style: TextStyle(
+                        child: Text(
+                          languageProvider.translate('Scan Again'),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: RiceSpacings.l),
                   ],
                 ),
               ),
@@ -206,5 +191,3 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 }
-
-

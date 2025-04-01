@@ -1,6 +1,8 @@
 import 'package:capstone_dr_rice/models/disease.dart' show Disease, DiseasePart;
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class DiseaseCard extends StatelessWidget {
@@ -24,6 +26,7 @@ class DiseaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -75,7 +78,7 @@ class DiseaseCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                'Part of Disease: ',
+                                languageProvider.translate('Part of Disease: '),
                                 style: RiceTextStyles.label.copyWith(
                                   color: RiceColors.neutral,
                                   fontWeight: FontWeight.bold,

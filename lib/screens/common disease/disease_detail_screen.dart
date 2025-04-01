@@ -1,8 +1,10 @@
 // disease_detail_screen.dart
 import 'package:capstone_dr_rice/models/disease.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
 
 class DiseaseDetailScreen extends StatefulWidget {
   final Disease disease;
@@ -26,6 +28,8 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageProvider languageProvider =
+        Provider.of<LanguageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -75,7 +79,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                   Row(
                     children: [
                       Text(
-                        'Affected Part: ',
+                        languageProvider.translate('Affected Part: '),
                         style: RiceTextStyles.body.copyWith(
                           color: RiceColors.neutral,
                           fontWeight: FontWeight.bold,
@@ -104,7 +108,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                   labelColor: RiceColors.neutralDark,
                   unselectedLabelColor: RiceColors.neutral,
                   indicatorColor: RiceColors.neutralDark,
-                  tabs: const [Tab(text: 'Symptoms'), Tab(text: 'Manage')],
+                  tabs: [Tab(text: languageProvider.translate('Symptoms')), Tab(text: languageProvider.translate('Manage'))],
                 ),
 
                 // TabBarView
@@ -124,7 +128,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Symptoms',
+                                  languageProvider.translate('Symptoms'),
                                   style: RiceTextStyles.subheadline.copyWith(
                                     color: RiceColors.neutralDark,
                                     fontWeight: FontWeight.bold,
@@ -166,7 +170,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Management',
+                                  languageProvider.translate('Management'),
                                   style: RiceTextStyles.subheadline.copyWith(
                                     color: RiceColors.neutralDark,
                                     fontWeight: FontWeight.bold,

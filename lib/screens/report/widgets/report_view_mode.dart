@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:capstone_dr_rice/models/user_report.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/report/report_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ReportViewMode extends StatelessWidget {
   final UserReport existingReport;
@@ -11,6 +13,7 @@ class ReportViewMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,7 +48,7 @@ class ReportViewMode extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "Part of Disease: ",
+                    text: languageProvider.translate("Part of Disease: "),
                     style: RiceTextStyles.label.copyWith(
                       fontSize: 14,
                       color: RiceColors.neutral,
@@ -71,7 +74,7 @@ class ReportViewMode extends StatelessWidget {
         SizedBox(height: RiceSpacings.s),
         // Description
         Text(
-          "Description",
+          languageProvider.translate("Description"),
           style: RiceTextStyles.body.copyWith(color: RiceColors.neutralDark),
         ),
         SizedBox(height: RiceSpacings.s),

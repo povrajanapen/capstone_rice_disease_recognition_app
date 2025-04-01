@@ -1,9 +1,11 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/common%20disease/common_disease_screen.dart'
     show CommonDiseasesScreen;
 import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
 import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
 import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
@@ -68,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Consumer<LanguageProvider>(
+      builder:(context, languageProvider, child) {
+            return Scaffold(
       appBar: AppBar(
         // App Header
         toolbarHeight: 80,
@@ -107,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (snapshot.hasError) {
                       return Center(
                         child: Text(
-                          'Error loading diagnoses.',
+                          languageProvider.translate('Error loading diagnoses'),
                           style: RiceTextStyles.label.copyWith(
                             color: RiceColors.red,
                           ),
@@ -118,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Text(
-                          'No diagnoses available.',
+                          languageProvider.translate('No diagnoses available'),
                           style: RiceTextStyles.label.copyWith(
                             color: RiceColors.textNormal,
                           ),
@@ -138,5 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+      },
+    );
+
   }
 }

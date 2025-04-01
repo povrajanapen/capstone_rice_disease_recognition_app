@@ -1,6 +1,8 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
 
 class DetailCardWidget extends StatelessWidget {
   const DetailCardWidget({
@@ -16,6 +18,8 @@ class DetailCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageProvider languageProvider =
+        Provider.of<LanguageProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -31,8 +35,8 @@ class DetailCardWidget extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade200, width: 1),
       ),
       child: ExpansionTile(
-        title: const Text(
-          'Details',
+        title: Text(
+          languageProvider.translate('Details'),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -63,7 +67,7 @@ class DetailCardWidget extends StatelessWidget {
                 labelColor: Colors.black87,
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: Colors.black87,
-                tabs: const [Tab(text: 'Symptoms'), Tab(text: 'Management')],
+                tabs: [Tab(text: languageProvider.translate('Symptoms')), Tab(text: languageProvider.translate('Management'))],
               ),
               const SizedBox(height: 8), // Space between TabBar and content
               ConstrainedBox(
@@ -82,8 +86,8 @@ class DetailCardWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Symptoms',
+                             Text(
+                              languageProvider.translate('Symptoms'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -119,8 +123,8 @@ class DetailCardWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Management',
+                            Text(
+                              languageProvider.translate('Management'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

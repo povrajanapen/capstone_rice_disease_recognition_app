@@ -1,4 +1,6 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
 
@@ -7,6 +9,7 @@ class GetStartedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
       body: Center(
@@ -20,7 +23,7 @@ class GetStartedScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: RiceSpacings.xl),
               child: RiceButton(
-                text: 'Login',
+                text: languageProvider.translate('Login'),
                 icon: Icons.login,
                 onPressed: () {
                   // Handle login button press
@@ -46,7 +49,7 @@ class GetStartedScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Not a member yet?',
+                        languageProvider.translate('Not a member yet?'),
                         style: RiceTextStyles.body.copyWith(
                           fontSize: 16,
                           color: RiceColors.neutralDark,
@@ -58,7 +61,7 @@ class GetStartedScreen extends StatelessWidget {
                           // Handle create account link press
                         },
                         child: Text(
-                          'Create an Account',
+                          languageProvider.translate('Create an Account'),
                           style: RiceTextStyles.body.copyWith(
                             fontSize: 16,
                             color: RiceColors.neutral,

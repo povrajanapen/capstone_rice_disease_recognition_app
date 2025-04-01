@@ -1,3 +1,4 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_edit_mode.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_view_mode.dart';
@@ -31,6 +32,7 @@ class _ReportScreenState extends State<ReportScreen> {
   String? selectedImagePath;
   late DiseasePart selectedDiseasePart;
   late ReportScreenMode currentMode;
+
 
   @override
   void initState() {
@@ -85,7 +87,7 @@ class _ReportScreenState extends State<ReportScreen> {
     });
   }
 
-  void submitReport() {
+  void submitReport(LanguageProvider languageProvider) {
     final isComplete =
         selectedImagePath != null &&
         nameController.text.isNotEmpty &&
@@ -113,8 +115,8 @@ class _ReportScreenState extends State<ReportScreen> {
         SnackBar(
           content: Text(
             currentMode == ReportScreenMode.create
-                ? "Report submitted successfully!"
-                : "Report updated successfully!",
+                ? languageProvider.translate("Report submitted successfully!")
+                : languageProvider.translate("Report updated successfully!"),
           ),
         ),
       );
@@ -141,30 +143,32 @@ class _ReportScreenState extends State<ReportScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Please fill in all fields and select an image."),
+          content: Text(languageProvider.translate("Please fill in all fields and select an image.")),
         ),
       );
     }
   }
 
-  String _getAppBarTitle() {
+  String _getAppBarTitle(LanguageProvider languageProvider) {
     switch (currentMode) {
       case ReportScreenMode.create:
-        return "Report Disease";
+        return languageProvider.translate("Report Disease");
       case ReportScreenMode.view:
-        return "Report Details";
+        return languageProvider.translate("Report Details");
       case ReportScreenMode.edit:
-        return "Edit Report";
+        return languageProvider.translate("Edit Report");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
       appBar: AppBar(
         title: Text(
-          _getAppBarTitle(),
+          _getAppBarTitle(languageProvider),
           style: RiceTextStyles.body.copyWith(color: RiceColors.neutralDark),
         ),
         backgroundColor: Colors.transparent,
@@ -198,7 +202,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     descriptionController: descriptionController,
                     selectedDiseasePart: selectedDiseasePart,
                     onDiseasePartChanged: onDiseasePartChanged,
-                    submitReport: submitReport,
+                    submitReport: () => submitReport(languageProvider),
                     currentMode: currentMode,
                   ),
         ),
