@@ -1,4 +1,6 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConfidenceBarWidget extends StatelessWidget {
   final double confidence;
@@ -12,14 +14,16 @@ class ConfidenceBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageProvider languageProvider =
+        Provider.of<LanguageProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Confidence',
+            Text(
+              languageProvider.translate('Confidence'),
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             Text(

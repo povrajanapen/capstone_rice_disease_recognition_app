@@ -19,6 +19,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ReportProvider()),
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
 
+
       ],
       child: MyApp(),
     ),

@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:capstone_dr_rice/models/user_report.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
@@ -13,7 +14,8 @@ class ReportViewMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,7 +33,7 @@ class ReportViewMode extends StatelessWidget {
         ),
         SizedBox(height: RiceSpacings.m),
 
-        // Disease name
+        // Disease name (not translated, user-entered)
         Text(
           existingReport.disease.name,
           style: RiceTextStyles.heading.copyWith(
@@ -39,6 +41,7 @@ class ReportViewMode extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+
         // Disease part
         Row(
           children: [
@@ -48,17 +51,24 @@ class ReportViewMode extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: languageProvider.translate("Part of Disease: "),
+                    text: languageProvider.translate("Part of Disease"),
                     style: RiceTextStyles.label.copyWith(
                       fontSize: 14,
                       color: RiceColors.neutral,
-                      fontWeight: FontWeight.bold, // Make this part bold
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   TextSpan(
-                    text:
-                        (existingReport.disease.affectedPart?.name ?? '')
-                            .capitalize(),
+                    text: ": ",
+                    style: RiceTextStyles.label.copyWith(
+                      fontSize: 14,
+                      color: RiceColors.neutral,
+                    ),
+                  ),
+                  TextSpan(
+                    text: existingReport.disease.affectedPart != null
+                        ? languageProvider.translate(existingReport.disease.affectedPart!.name)
+                        : '',
                     style: RiceTextStyles.label.copyWith(
                       fontSize: 14,
                       color: RiceColors.neutral,
@@ -72,12 +82,15 @@ class ReportViewMode extends StatelessWidget {
         SizedBox(height: RiceSpacings.m),
         RiceDivider(),
         SizedBox(height: RiceSpacings.s),
-        // Description
+
+        // Description label
         Text(
           languageProvider.translate("Description"),
           style: RiceTextStyles.body.copyWith(color: RiceColors.neutralDark),
         ),
         SizedBox(height: RiceSpacings.s),
+
+        // Description content (not translated, user-entered)
         Text(
           existingReport.disease.description,
           style: RiceTextStyles.label.copyWith(
@@ -85,7 +98,6 @@ class ReportViewMode extends StatelessWidget {
             color: RiceColors.textNormal,
           ),
         ),
-        // No accuracy display for user reports
       ],
     );
   }

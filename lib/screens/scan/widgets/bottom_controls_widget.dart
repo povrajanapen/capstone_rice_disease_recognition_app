@@ -2,13 +2,13 @@
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
 
-class ScanBottomControlsWidget extends StatelessWidget {
+class BottomControlsWidget extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onTakePicture;
   final VoidCallback onUpload;
   final LanguageProvider languageProvider;
 
-  const ScanBottomControlsWidget({
+  const BottomControlsWidget({
     super.key,
     required this.isLoading,
     required this.onTakePicture,
@@ -25,7 +25,7 @@ class ScanBottomControlsWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: const Color.fromARGB(255, 140, 143, 141),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),

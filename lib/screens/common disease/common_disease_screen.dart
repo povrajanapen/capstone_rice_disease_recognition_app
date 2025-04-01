@@ -14,7 +14,7 @@ class CommonDiseasesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+        final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -86,3 +86,4 @@ class CommonDiseasesScreen extends StatelessWidget {
     );
   }
 }
+

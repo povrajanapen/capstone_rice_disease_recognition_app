@@ -1,6 +1,9 @@
 import 'package:capstone_dr_rice/dummy_data/dummy_data.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
+import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
-import '../../../theme/theme.dart';
+import 'package:provider/provider.dart';
+
 
 class FeatureButtons extends StatelessWidget {
   final Function(String) onFeaturePressed;
@@ -12,13 +15,16 @@ class FeatureButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width; 
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    double screenWidth = MediaQuery.of(context).size.width;
     double buttonWidth = screenWidth * 0.25;
     double buttonHeight = 25;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: featureButtons.map((button) {
+        final translatedTitle = languageProvider.translate(button['titleKey']!);
+
         return Expanded(
           child: GestureDetector(
             onTap: () => onFeaturePressed(button['route']!),
@@ -29,7 +35,9 @@ class FeatureButtons extends StatelessWidget {
               decoration: BoxDecoration(
                 color: RiceColors.neutralLight,
                 borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
-                border: Border.fromBorderSide(BorderSide(width: 0.5, color: RiceColors.neutral))
+                border: Border.fromBorderSide(
+                  BorderSide(width: 0.5, color: RiceColors.neutral),
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -39,10 +47,9 @@ class FeatureButtons extends StatelessWidget {
                     height: 65,
                   ),
                   const SizedBox(height: RiceSpacings.m),
-                  
-                 SizedBox(
+                  SizedBox(
                     width: buttonWidth,
-                    height: buttonHeight, 
+                    height: buttonHeight,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: RiceColors.neutralLighter,
@@ -53,7 +60,7 @@ class FeatureButtons extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          button['title']!,
+                          translatedTitle,
                           style: RiceTextStyles.label.copyWith(
                             color: RiceColors.neutralDark,
                             fontWeight: FontWeight.bold,
@@ -73,4 +80,3 @@ class FeatureButtons extends StatelessWidget {
     );
   }
 }
-

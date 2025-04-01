@@ -9,7 +9,8 @@ class GetStartedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+    LanguageProvider languageProvider =
+        Provider.of<LanguageProvider>(context);
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
       body: Center(

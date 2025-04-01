@@ -46,6 +46,76 @@
     "Symptoms": "Symptoms",
     "Management": "Management",
     "Common Disease": "Common Disease",
-    "Manage": "Manage"
+    "Manage": "Manage",
+    "Select Disease Type": "Select Disease Type",
+    "Select image": "Select image",
+    "Name": "Name",
+    "Type here...": "Type here...",
+    "Submit": "Submit",
+    "Update": "Update",
+    "Report submitted successfully": "Report submitted successfully!",
+    "Report updated successfully": "Report updated successfully!",
+    "Please fill in all fields": "Please fill in all fields and select an image.",
+    "No saved diagnoses yet": "No saved diagnoses yet!",
+    "Image not available": "Image not available",
+    "Diagnosis removed": "Diagnosis removed",
+    "Rice Scan": "Rice Scan",
+    "Part of Disease: ": "Part of Disease: ",
+    "No recent Diagnoses": "No recent Diagnoses",
+
+    "Leaf Blast": "Blast",
+    "Brown Spot": "Brown Spot",
+    "Tungro": "Tungro",
+    "Bacterial Blight": "Bacterial Blight",
+    "Sheath Blight": "Sheath Blight",
+    "Healthy": "Healthy",
+    "Hispa": "Hispa",
+
+    "Leaves": "Leaves",
+    "Sheath": "Sheath",
+    "Grains": "Grains",
+    "Stem": "Stem",
+    "Whole Plant": "Whole Plant",
+
+
+
+
+
+
+      "Bacterial": "Bacterial",
+      "Fungal": "Fungal",
+      "Viral": "Viral",
+      "Pest": "Pest",
+      "none": "None",
+
+      "BacterialBlightDescription": "Causes yellowish stripes and wilting leaves.",
+      "BacterialBlightSymptoms": "On seedlings, infected leaves turn grayish-green and roll up. As the disease progresses, leaves turn yellow to straw-colored and wilt, causing whole seedlings to dry up and die (known as 'kresek'). In older plants, water-soaked to yellowish stripes appear along leaf veins, turning grayish-white with wavy margins. Milky or opaque dew drops containing bacteria may ooze from affected areas, drying into a crust.",
+      "BacterialBlightManagement": "Plant resistant varieties (e.g., PSB Rc82). Ensure good drainage in fields and nurseries. Remove weed hosts and plow under rice stubble, straw, ratoons, and volunteer seedlings. Allow fallow fields to dry to suppress bacteria in soil and residues. Use balanced amounts of plant nutrients, especially nitrogen.",
+
+      "BrownSpotDescription": "Brown spots with gray centers on leaves and grains.",
+      "BrownSpotSymptoms": "Numerous circular to oval spots on leaves, coleoptile, leaf sheath, panicle branches, glumes, and spikelets. Spots are brownish with gray centers surrounded by reddish margins, up to 10 mm long. On seeds, 'eye-spot' symptoms with brown edges and light centers. Severe infection can kill leaves and cause unfilled or discolored grains ('pecky rice').",
+      "BrownSpotManagement": "Use resistant varieties. Treat seeds with hot water (53-54°C for 10-12 minutes). Apply fertilizers at recommended rates to correct nutrient deficiencies (especially potassium). Collect and burn straw and debris after harvest, or plow into soil. Fungicides like iprodione, azoxystrobin, trifloxystrobin, propiconazole, or carbendazim can be used if needed.",
+
+      "HealthyDescription": "No disease symptoms, healthy green leaves.",
+      "HealthySymptoms": "No disease symptoms. Leaves are uniformly green, with no spots, discoloration, or wilting. Plants grow vigorously with well-filled grains.",
+      "HealthyManagement": "Maintain good agricultural practices: proper irrigation, balanced fertilization, and pest control to prevent disease onset.",
+
+      "HispaDescription": "Ladder-like scraping on leaves by beetles.",
+      "HispaSymptoms": "Not a disease but an insect pest (rice hispa beetle). Adults scrape the upper surface of leaves, leaving only veins, creating a ladder-like appearance. Larvae mine between leaf veins, causing brown, dried patches.",
+      "HispaManagement": "Hand-pick beetles in small fields. Use light traps to monitor and reduce adult populations. Apply insecticides like carbaryl or malathion if infestation is severe, following local recommendations.",
+
+      "LeafBlastDescription": "Grayish-white spots on leaves.",
+      "LeafBlastSymptoms": "White to gray-green lesions or spots with dark green borders on leaves, starting small and enlarging. In severe cases, spots turn grayish-white with necrotic centers, killing leaves. At seedling stage, it can kill plants; at later stages, it affects grain filling.",
+      "LeafBlastManagement": "Plant resistant varieties. Avoid excessive nitrogen fertilizer. Maintain flood at 4-6 inches if drained. Use fungicides like tricyclazole or azoxystrobin during early infection stages if necessary.",
+
+      "SheathBlightDescription": "Greenish-gray lesions on sheaths.",
+      "SheathBlightSymptoms": "Oval or ellipsoidal greenish-gray lesions, 1-3 cm long, on leaf sheaths near the water line, turning grayish-white with brown margins. Lesions spread to upper plant parts, including blades, causing tan, irregular lesions. Sclerotia (small, hard fungal bodies) may be present. Severe cases reduce leaf area and cause empty grains.",
+      "SheathBlightManagement": "No fully resistant varieties available. Reduce seeding rates and avoid excessive nitrogen. Control weeds and grasses. Use foliar fungicides (e.g., propiconazole, azoxystrobin) if economical, especially if flag leaves are affected.",
+
+      "TungroDescription": "Yellow-orange leaf discoloration and stunting.",
+      "TungroSymptoms": "Leaf discoloration (yellow to yellow-orange, especially older leaves), stunted growth, reduced tiller numbers, and small, incompletely exerted panicles with sterile or partly filled grains covered in dark brown blotches. Mottled young leaves. Most severe during vegetative phase, especially tillering.",
+      "TungroManagement": "Plant resistant varieties. Plow infected stubbles immediately after harvest to reduce leafhopper vectors and inoculum. Avoid late planting relative to the average date in the area. Control leafhopper populations with insecticides if needed."
+
+
 
   }

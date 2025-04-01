@@ -21,20 +21,20 @@ final List<SlideContent> sliderContent = [
   ),
 ];
 
-// Feature buttons data
+// Feature buttons data with translation keys
 final List<Map<String, String>> featureButtons = [
   {
-    'title': 'Common Disease',
+    'titleKey': 'Common Disease', // Key for translation
     'icon': 'assets/icons/wheat_icon.png',
     'route': '/diseases',
   },
   {
-    'title': 'Rice Scan',
+    'titleKey': 'Rice Scan',
     'icon': 'assets/icons/scan_icon.png',
     'route': '/scan',
   },
   {
-    'title': 'Report Disease',
+    'titleKey': 'Report Disease',
     'icon': 'assets/icons/report.png',
     'route': '/report',
   },

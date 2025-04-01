@@ -43,15 +43,39 @@ class PredictionCardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(
+              Text(
                 languageProvider.translate('Classification'),
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
               Row(
                 children: [
-                  ConfidenceBarWidget(
-                    confidence: confidence,
-                    confidencePercent: confidencePercent,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          confidence > 0.8
+                              ? Colors.green.shade50
+                              : confidence > 0.5
+                              ? Colors.orange.shade50
+                              : Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      confidencePercent,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            confidence > 0.8
+                                ? Colors.green.shade700
+                                : confidence > 0.5
+                                ? Colors.orange.shade700
+                                : Colors.red.shade700,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   IconButton(icon: const Icon(Icons.save), onPressed: onSave),
@@ -60,7 +84,7 @@ class PredictionCardWidget extends StatelessWidget {
             ],
           ),
           Text(
-            result['class'].toString(),
+            languageProvider.translate(result['class'].toString()),
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -68,43 +92,9 @@ class PredictionCardWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                   Text(
-                    languageProvider.translate('Confidence'),
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                  Text(
-                    confidencePercent,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: confidence,
-                  minHeight: 8,
-                  backgroundColor: Colors.grey.shade200,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    confidence > 0.8
-                        ? Colors.green
-                        : confidence > 0.5
-                        ? Colors.orange
-                        : Colors.red,
-                  ),
-                ),
-              ),
-            ],
+          ConfidenceBarWidget(
+            confidence: confidence,
+            confidencePercent: confidencePercent,
           ),
         ],
       ),

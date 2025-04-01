@@ -1,13 +1,13 @@
 import 'package:capstone_dr_rice/models/disease_data.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
-import 'package:capstone_dr_rice/screens/scan/widgets/detail_card_widget.dart';
-import 'package:capstone_dr_rice/theme/theme.dart';
+import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:provider/provider.dart';
 import 'widgets/result_image_widget.dart';
 import 'widgets/prediction_card_widget.dart';
+import 'widgets/detail_card_widget.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class ResultScreen extends StatefulWidget {
@@ -24,27 +24,23 @@ class ResultScreen extends StatefulWidget {
   _ResultScreenState createState() => _ResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderStateMixin {
+class _ResultScreenState extends State<ResultScreen>
+    with SingleTickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    flutterTts.setLanguage("en-US");
+    flutterTts.setPitch(1.0);
     _tabController = TabController(length: 2, vsync: this);
-    _initTts();
-  }
-
-  Future<void> _initTts() async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-    await flutterTts.setLanguage(languageProvider.languageCode); // Dynamic language
-    await flutterTts.setPitch(1.0);
+    _addRecentDiagnosis();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    flutterTts.stop(); // Clean up TTS
     super.dispose();
   }
 
@@ -54,7 +50,7 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
     return diseaseMap[diseaseName] ??
         Disease(
           id: 'unknown',
-          name: 'Unknown',
+          name: diseaseName,
           description: 'Unknown disease',
           type: DiseaseType.bacterial,
           symptoms: 'No specific information available.',
@@ -62,8 +58,7 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
         );
   }
 
-  Future<void> _saveDiagnosis(BuildContext context) async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+  void _addRecentDiagnosis() async {
     final disease = await _getDiseaseFromResult();
     final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
     final diagnose = Diagnose(
@@ -71,44 +66,99 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
       disease: disease,
       timestamp: DateTime.now(),
       imagePath: widget.imagePath,
-      confidence: double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
+      confidence:
+          double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
       userId: null,
     );
-    context.read<DiagnosisProvider>().addDiagnosis(diagnose, widget.imagePath);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(languageProvider.translate('Diagnosis saved'))),
+
+    // Check for duplicates
+    final provider = context.read<DiagnosisProvider>();
+    final recentDiagnoses = provider.recentDiagnoses;
+    final isDuplicate = recentDiagnoses.any(
+      (d) =>
+          d.imagePath == diagnose.imagePath &&
+          d.disease.name == diagnose.disease.name &&
+          d.confidence == diagnose.confidence,
     );
+
+    if (!isDuplicate) {
+      await provider.addDiagnosis(
+        diagnose,
+        widget.imagePath,
+        save: false, 
+      );
+    } else {
+      print('Skipping duplicate diagnosis: $diagnosisId');
+    }
+  }
+
+  Future<void> _saveDiagnosis(BuildContext context, LanguageProvider languageProvider) async {
+    // final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final disease = await _getDiseaseFromResult();
+    final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
+    final diagnose = Diagnose(
+      id: diagnosisId,
+      disease: disease,
+      timestamp: DateTime.now(),
+      imagePath: widget.imagePath,
+      confidence:
+          double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
+      userId: null,
+    );
+    
+    // Check for duplicates in saved diagnoses
+    final provider = context.read<DiagnosisProvider>();
+    final savedDiagnoses = provider.savedDiagnoses;
+    final isDuplicate = savedDiagnoses.any(
+      (d) =>
+          d.imagePath == diagnose.imagePath &&
+          d.disease.name == diagnose.disease.name &&
+          d.confidence == diagnose.confidence,
+    );
+
+    // if (!isDuplicate) {
+    //   await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis saved'))));
+    // } else {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis already saved'))));
+    // }
+    if (!isDuplicate) {
+      await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Diagnosis saved'))),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Diagnosis already saved'))),
+      );
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final confidence = double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
+    final confidence =
+        double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
     final confidencePercent = '${(confidence * 100).toStringAsFixed(2)}%';
-
-    // Fallback disease with translations
-    final fallbackDisease = Disease(
-      id: languageProvider.translate('unknown'),
-      name: languageProvider.translate('Unknown'),
-      description: languageProvider.translate('Unknown disease'),
-      type: DiseaseType.bacterial,
-      symptoms: languageProvider.translate('No info'),
-      management: languageProvider.translate('No info'),
-    );
+    final diagnosisProvider = context.watch<DiagnosisProvider>();
+    diagnosisProvider.getRecentDiagnoses();
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: RiceColors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: RiceColors.white,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           languageProvider.translate('Analysis Result'),
-          style: TextStyle(
-            color: RiceColors.neutralDark,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
-        iconTheme: IconThemeData(color: RiceColors.neutralDark),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -116,15 +166,18 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(RiceSpacings.m), // Consistent spacing
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width, // Full width
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.32,
                   child: ResultImageWidget(imagePath: widget.imagePath),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(RiceSpacings.m),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -133,24 +186,36 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: RiceColors.neutralDark,
+                        color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: RiceSpacings.m),
+                    const SizedBox(height: 10),
                     PredictionCardWidget(
                       result: widget.result,
                       confidence: confidence,
                       confidencePercent: confidencePercent,
-                      onSave: () => _saveDiagnosis(context),
+                      onSave: () => _saveDiagnosis(context, languageProvider),
                     ),
-                    const SizedBox(height: RiceSpacings.m),
+                    const SizedBox(height: 10),
                     FutureBuilder<Disease>(
                       future: _getDiseaseFromResult(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
-                        final disease = snapshot.data ?? fallbackDisease;
+                        final disease =
+                            snapshot.data ??
+                            Disease(
+                              id: 'unknown',
+                              name: 'Unknown',
+                              description: 'Unknown disease',
+                              type: DiseaseType.bacterial,
+                              symptoms: 'No info',
+                              management: 'No info',
+                            );
                         return DetailCardWidget(
                           tabController: _tabController,
                           flutterTts: flutterTts,
@@ -158,11 +223,16 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
                         );
                       },
                     ),
-                    const SizedBox(height: RiceSpacings.l),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ScanScreen()),
+                          )
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -173,14 +243,13 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
                         ),
                         child: Text(
                           languageProvider.translate('Scan Again'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: RiceSpacings.l),
                   ],
                 ),
               ),

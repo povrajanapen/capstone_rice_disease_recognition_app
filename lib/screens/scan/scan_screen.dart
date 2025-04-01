@@ -1,5 +1,3 @@
-
-
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/scan/result_screen.dart';
 import 'package:capstone_dr_rice/service/disease_api_service.dart';
@@ -19,6 +17,7 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
+  // ignore: unused_field
   File? _selectedImage;
   final ImagePicker _imagePicker = ImagePicker();
   final DiseaseApiService _apiService = DiseaseApiService();
@@ -79,10 +78,10 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(color: Colors.black),
-          const ScanOverlayWidget(),
-          ScanAppBarWidget(languageProvider: languageProvider),
-          ScanBottomControlsWidget(
+          Container(color: const Color.fromARGB(255, 140, 143, 141)),
+          const CameraPreviewWidget(),
+          AppBarWidget(languageProvider: languageProvider),
+          BottomControlsWidget(
             isLoading: _isLoading,
             onTakePicture: _takePicture,
             onUpload: _uploadAndPredict,

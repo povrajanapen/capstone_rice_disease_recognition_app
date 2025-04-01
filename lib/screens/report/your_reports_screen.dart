@@ -1,5 +1,5 @@
-import 'dart:io';
 
+import 'dart:io';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,6 @@ class YourReportsScreen extends StatelessWidget {
     final reportProvider = Provider.of<ReportProvider>(context);
     final reports = reportProvider.reports;
     final languageProvider = Provider.of<LanguageProvider>(context);
-  
 
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
@@ -35,21 +34,19 @@ class YourReportsScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close, color: RiceColors.neutralDark),
-          onPressed:
-              () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
-      body:
-          reports.isEmpty
-              ? _buildEmptyState(languageProvider)
-              : ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
-                itemCount: reports.length,
-                itemBuilder: (context, index) {
-                  final report = reports[index];
-                  return _buildReportCard(context, report, reportProvider, languageProvider);
-                },
-              ),
+      body: reports.isEmpty
+          ? _buildEmptyState(languageProvider)
+          : ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
+              itemCount: reports.length,
+              itemBuilder: (context, index) {
+                final report = reports[index];
+                return _buildReportCard(context, report, reportProvider, languageProvider);
+              },
+            ),
     );
   }
 
@@ -64,17 +61,14 @@ class YourReportsScreen extends StatelessWidget {
         final updatedReport = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => ReportScreen(
-                  existingReport: report,
-                  mode: ReportScreenMode.view,
-                ),
+            builder: (context) => ReportScreen(
+              existingReport: report,
+              mode: ReportScreenMode.view,
+            ),
           ),
         );
         if (updatedReport != null) {
-          reportProvider.updateReport(
-            updatedReport,
-          ); // Update the report in the provider
+          reportProvider.updateReport(updatedReport);
         }
       },
       child: Container(
@@ -97,7 +91,6 @@ class YourReportsScreen extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Disease image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(RiceSpacings.radius),
                     child: Image.file(
@@ -108,8 +101,6 @@ class YourReportsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: RiceSpacings.m),
-
-                  // Disease details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,34 +112,12 @@ class YourReportsScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
-                        // Affected Part
                         SizedBox(height: 5),
                         if (report.disease.affectedPart != null)
-                          Row(
-                            children: [
-                              // Text(
-                              //   LanguageProvider.translate('Part of Disease: '),
-                              //   style: RiceTextStyles.label.copyWith(
-                              //     color: RiceColors.neutral,
-                              //     fontWeight: FontWeight.bold,
-                              //   ),
-                              // ),
-                              // Text(
-                              //   report.disease.affectedPart!.name.capitalize(),
-                              //   style: RiceTextStyles.label.copyWith(
-                              //     color: RiceColors.neutral,
-                              //   ),
-                              // ),
-                              if (report.disease.affectedPart != null)
-                              _buildTextRow(
-                                languageProvider.translate('Part of Disease'),
-                                report.disease.affectedPart!.name.capitalize(),
-                              ),
-                            ],
+                          _buildTextRow(
+                            languageProvider.translate('Part of Disease'),
+                            languageProvider.translate(report.disease.affectedPart!.name),
                           ),
-
-                        // Description
                         SizedBox(height: RiceSpacings.s),
                         Text(
                           report.disease.description,
@@ -161,7 +130,6 @@ class YourReportsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Remove button
                   IconButton(
                     icon: Icon(Icons.delete, color: RiceColors.red),
                     onPressed: () {
@@ -182,54 +150,50 @@ class YourReportsScreen extends StatelessWidget {
     UserReport report,
     ReportProvider reportProvider,
     LanguageProvider languageProvider,
-    
   ) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(
-              languageProvider.translate("Delete Report"),
-              style: RiceTextStyles.body.copyWith(
-                color: RiceColors.neutralDark,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text(
-             languageProvider.translate("Are you sure you want to delete this report"),
-              style: RiceTextStyles.label.copyWith(
-                fontSize: 16,
-                color: RiceColors.neutralDark,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context), // Cancel
-                child: Text(
-                 languageProvider.translate("Cancel"),
-                  style: RiceTextStyles.button.copyWith(
-                    fontSize: 18,
-                    color: RiceColors.neutralDark,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  reportProvider.deleteReport(
-                    report.disease.id,
-                  ); // Delete the report
-                  Navigator.pop(context); // Close the dialog
-                },
-                child: Text(
-                languageProvider.translate("Delete"),
-                  style: RiceTextStyles.button.copyWith(
-                    fontSize: 18,
-                    color: RiceColors.red,
-                  ),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(
+          languageProvider.translate("Delete Report"),
+          style: RiceTextStyles.body.copyWith(
+            color: RiceColors.neutralDark,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        content: Text(
+          languageProvider.translate("Are you sure you want to delete this report"),
+          style: RiceTextStyles.label.copyWith(
+            fontSize: 16,
+            color: RiceColors.neutralDark,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              languageProvider.translate("Cancel"),
+              style: RiceTextStyles.button.copyWith(
+                fontSize: 18,
+                color: RiceColors.neutralDark,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              reportProvider.deleteReport(report.disease.id);
+              Navigator.pop(context);
+            },
+            child: Text(
+              languageProvider.translate("Delete"),
+              style: RiceTextStyles.button.copyWith(
+                fontSize: 18,
+                color: RiceColors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -241,7 +205,7 @@ class YourReportsScreen extends StatelessWidget {
           Icon(Icons.description_outlined, size: 64, color: RiceColors.neutral),
           SizedBox(height: RiceSpacings.m),
           Text(
-          languageProvider.translate("No reports yet"),
+            languageProvider.translate("No reports yet"),
             style: RiceTextStyles.body.copyWith(
               color: RiceColors.neutralDark,
               fontSize: 18,
@@ -256,6 +220,7 @@ class YourReportsScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildTextRow(String label, String value) {
     return Row(
       children: [
@@ -276,3 +241,4 @@ class YourReportsScreen extends StatelessWidget {
     );
   }
 }
+

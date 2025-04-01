@@ -23,6 +23,7 @@ class NewsSlider extends StatelessWidget {
       }).toList(),
     );
   }
+
 }
 
 Widget _buildSlide(SlideContent slide) {
