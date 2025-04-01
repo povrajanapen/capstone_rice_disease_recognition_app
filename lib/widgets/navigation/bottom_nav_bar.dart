@@ -1,8 +1,10 @@
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/home/home_screen.dart';
+import 'package:capstone_dr_rice/screens/profile/profile_screen.dart';
 import 'package:capstone_dr_rice/screens/saved%20diagnosis/saved_diagnosis_screen.dart';
 import 'package:capstone_dr_rice/screens/get%20started/get_started_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:provider/provider.dart';

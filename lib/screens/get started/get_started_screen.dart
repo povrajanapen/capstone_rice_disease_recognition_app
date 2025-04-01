@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
+import '../login/login_screen.dart';
+import '../signup/signup_screen.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
@@ -27,7 +29,12 @@ class GetStartedScreen extends StatelessWidget {
                 text: languageProvider.translate('Login'),
                 icon: Icons.login,
                 onPressed: () {
-                  // Handle login button press
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const LoginScreen(),
+                  );
                 },
               ),
             ),
@@ -59,7 +66,12 @@ class GetStartedScreen extends StatelessWidget {
                       SizedBox(height: RiceSpacings.s),
                       GestureDetector(
                         onTap: () {
-                          // Handle create account link press
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => const SignupScreen(),
+                          );
                         },
                         child: Text(
                           languageProvider.translate('Create an Account'),
@@ -67,6 +79,7 @@ class GetStartedScreen extends StatelessWidget {
                             fontSize: 16,
                             color: RiceColors.neutral,
                             decoration: TextDecoration.underline,
+                            decorationColor: RiceColors.neutral,
                           ),
                         ),
                       ),
