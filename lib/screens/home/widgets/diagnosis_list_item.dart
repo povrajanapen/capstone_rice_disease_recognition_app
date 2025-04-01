@@ -1,21 +1,23 @@
-// lib/widgets/home/diagnosis_list_item.dart
+
+import 'package:capstone_dr_rice/models/disease.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
-
-import '../../../models/diagnosis_model.dart';
 import '../../../utils/date_time_util.dart';
 
 class DiagnosisListItem extends StatelessWidget {
-  final DiagnosisModel diagnosis;
+  final Diagnose diagnosis;
   final VoidCallback onTap;
   final VoidCallback onMoreTap;
+  final LanguageProvider languageProvider;
 
   const DiagnosisListItem({
     super.key,
     required this.diagnosis,
     required this.onTap,
     required this.onMoreTap,
+    required this.languageProvider,
   });
 
   @override
@@ -31,7 +33,7 @@ class DiagnosisListItem extends StatelessWidget {
               children: [
                 _buildDiseaseImage(),
                 const SizedBox(width: 16),
-                Expanded(child: _buildDiseaseInfo()),
+                Expanded(child: _buildDiseaseInfo(languageProvider)),
               ],
             ),
           ),
@@ -45,7 +47,7 @@ class DiagnosisListItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(RiceSpacings.radius),
       child: Image.asset(
-        diagnosis.validImageUrl,
+        diagnosis.imagePath,
         width: 64,
         height: 64,
         fit: BoxFit.cover,
@@ -61,17 +63,22 @@ class DiagnosisListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildDiseaseInfo() {
+  Widget _buildDiseaseInfo(LanguageProvider languageProvider) {
+    String nameKey = diagnosis.disease.name;
+    String descKey = "${diagnosis.disease.name.replaceAll(' ', '')}Description";
+    String translatedName = languageProvider.translate(nameKey);
+    String translatedDesc = languageProvider.translate(descKey);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            //// Disease Name
+            // Disease Name (translated)
             Expanded(
               child: Text(
-                diagnosis.disease.name,
+                translatedName,
                 style: RiceTextStyles.label.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -79,16 +86,16 @@ class DiagnosisListItem extends StatelessWidget {
             ),
             Row(
               children: [
-                //// Scan Date
+                // Scan Date (not translated, dynamic)
                 Text(
-                  getRelativeTime(diagnosis.scanDate),
+                  getRelativeTime(diagnosis.timestamp),
                   style: RiceTextStyles.label.copyWith(
                     color: Colors.grey,
                     fontSize: 11,
                   ),
                 ),
                 SizedBox(width: 1),
-                //// More Icon
+                // More Icon
                 IconButton(
                   icon: const Icon(Icons.more_vert, size: 16),
                   onPressed: onMoreTap,
@@ -100,14 +107,11 @@ class DiagnosisListItem extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 2),
-
-        //// Disease Description
+        // Disease Description (translated with fallback)
         Text(
-          diagnosis.disease.description,
+          translatedDesc == descKey ? diagnosis.disease.description : translatedDesc,
           style: RiceTextStyles.label.copyWith(
-            //fontWeight: FontWeight.w300,
             color: Colors.grey.shade700,
           ),
           maxLines: 2,

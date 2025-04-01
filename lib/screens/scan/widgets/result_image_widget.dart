@@ -23,7 +23,7 @@ class ResultImageWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: Image.file(File(imagePath), fit: BoxFit.cover),
+        child: Image.file(File(imagePath), fit: BoxFit.cover,),
       ),
     );
   }

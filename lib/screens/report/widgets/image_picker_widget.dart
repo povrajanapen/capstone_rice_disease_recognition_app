@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../../../theme/theme.dart';
 
 class ImagePickerWidget extends StatefulWidget {
@@ -31,6 +33,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageProvider languageProvider = Provider.of<LanguageProvider>(context);
     return GestureDetector(
       onTap: pickImage,
       child: DottedBorder(
@@ -61,7 +64,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                     Icon(Icons.add_photo_alternate, color: Colors.grey, size: 30),
                     SizedBox(width: RiceSpacings.s),
                     Text(
-                      "Select image",
+                      languageProvider.translate("Select image"),
                       style: RiceTextStyles.label.copyWith(
                         fontSize: 16,
                         color: Colors.grey,

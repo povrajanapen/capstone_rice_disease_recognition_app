@@ -4,7 +4,6 @@ import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
 import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
 import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
-import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
 import '../report/report_screen.dart';
@@ -21,15 +20,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final DiagnosisController _diagnosisController;
-  late Future<List<DiagnosisModel>> _recentDiagnoses;
 
   @override
   void initState() {
     super.initState();
     _diagnosisController = DiagnosisController(
       diagnosisService: DiagnosisService(),
-    );
-    _recentDiagnoses = _diagnosisController.getRecentDiagnoses();
+    ); 
   }
 
   void _handleFeaturePressed(String route) {
@@ -46,14 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
       
           MaterialPageRoute(builder: (context) => ScanScreen(),
           
-          // ResultScreen(
-          //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
-          //     result: {
-          //       'name': 'Healthy',
-          //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
-          //       'accuracy': 0.95, // Default confidence level
-          //     },
-          //   ),
           ),
         );
         break;
@@ -97,42 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: RiceSpacings.m),
 
                 // Recent diagnoses section
-                FutureBuilder<List<DiagnosisModel>>(
-                  future: _recentDiagnoses,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                RecentDiagnosesSection(
+                  controller: _diagnosisController,)
 
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error loading diagnoses.',
-                          style: RiceTextStyles.label.copyWith(
-                            color: RiceColors.red,
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No diagnoses available.',
-                          style: RiceTextStyles.label.copyWith(
-                            color: RiceColors.textNormal,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return RecentDiagnosesSection(
-                      diagnoses: snapshot.data!.take(3).toList(),
-                      controller: _diagnosisController,
-                    );
-                  },
-                ),
-              ],
+              ]   
             ),
           ),
         ),

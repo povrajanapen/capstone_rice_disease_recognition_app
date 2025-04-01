@@ -1,15 +1,19 @@
+
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
 
 class BottomControlsWidget extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onTakePicture;
   final VoidCallback onUpload;
+  final LanguageProvider languageProvider;
 
   const BottomControlsWidget({
     super.key,
     required this.isLoading,
     required this.onTakePicture,
     required this.onUpload,
+    required this.languageProvider,
   });
 
   @override
@@ -21,7 +25,7 @@ class BottomControlsWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: const Color.fromARGB(255, 140, 143, 141),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -50,20 +54,19 @@ class BottomControlsWidget extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: Colors.white,
                         ),
-                        child:
-                            isLoading
-                                ? const Padding(
-                                  padding: EdgeInsets.all(18.0),
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.black,
-                                  ),
-                                )
-                                : const Icon(
-                                  Icons.camera_alt,
+                        child: isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.all(18.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                   color: Colors.black,
-                                  size: 30,
                                 ),
+                              )
+                            : const Icon(
+                                Icons.camera_alt,
+                                color: Colors.black,
+                                size: 30,
+                              ),
                       ),
                     ),
                   ),
@@ -92,7 +95,9 @@ class BottomControlsWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isLoading ? "Processing..." : "Upload from Gallery",
+                      isLoading
+                          ? languageProvider.translate("Processing")
+                          : languageProvider.translate("Upload from Gallery"),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,

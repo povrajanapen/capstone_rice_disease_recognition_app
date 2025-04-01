@@ -20,6 +20,7 @@ class DiagnosesStorage {
     }
     final newPath = '${imageDir.path}/$diagnosisId.jpg';
     await File(sourcePath).copy(newPath);
+    print('Image saved to: $newPath');
     return newPath;
   }
 
@@ -28,11 +29,15 @@ class DiagnosesStorage {
       final filePath = await _diagnosesFilePath;
       final file = File(filePath);
       if (!await file.exists()) {
+        print('No diagnoses file found at $filePath');
         return [];
       }
       final jsonString = await file.readAsString();
       final List<dynamic> jsonData = jsonDecode(jsonString);
-      return jsonData.map((json) => Diagnose.fromJson(json)).toList();
+      final diagnoses =
+          jsonData.map((json) => Diagnose.fromJson(json)).toList();
+      print('Loaded ${diagnoses.length} diagnoses from $filePath');
+      return diagnoses;
     } catch (e) {
       print('Error loading diagnoses: $e');
       return [];
@@ -63,8 +68,13 @@ class DiagnosesStorage {
       imagePath: newImagePath,
       confidence: diagnosis.confidence,
       userId: diagnosis.userId,
+      isSaved: diagnosis.isSaved, // Preserve isSaved from input
     );
+    diagnoses.removeWhere(
+      (d) => d.id == updatedDiagnosis.id,
+    ); // Avoid duplicates by ID
     diagnoses.add(updatedDiagnosis);
-    await saveDiagnoses(diagnoses);
+    await saveDiagnoses(diagnoses); // Persist the updated list
+    print('Added diagnosis ${diagnosis.id}, total: ${diagnoses.length}');
   }
 }

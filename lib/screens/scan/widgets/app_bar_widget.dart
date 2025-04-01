@@ -1,7 +1,10 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:flutter/material.dart';
 
-class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+class AppBarWidget extends StatelessWidget {
+  final LanguageProvider languageProvider;
+
+  const AppBarWidget({super.key, required this.languageProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +15,14 @@ class CustomAppBar extends StatelessWidget {
       child: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          "Scan Object",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        title: Text(
+          languageProvider.translate('Scan Rice'),
+          style: const TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
       ),
     );
   }

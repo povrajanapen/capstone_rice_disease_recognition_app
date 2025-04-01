@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 enum DiseasePart {
   leaves,
   sheath,
@@ -101,7 +103,7 @@ class Disease {
     'name': name,
     'description': description,
     'affectedPart': affectedPart?.toJson(),
-    'type': type.toJson(),
+    'type': type.toString(),
     'symptoms': symptoms,
     'management': management,
     'imageUrl': imageUrl,
@@ -115,6 +117,7 @@ class Diagnose {
   final String imagePath;
   final double confidence;
   final String? userId;
+  final bool? isSaved;
 
   Diagnose({
     required this.id,
@@ -122,28 +125,76 @@ class Diagnose {
     required this.timestamp,
     required this.imagePath,
     required this.confidence,
+    this.isSaved,
     this.userId,
   });
 
   factory Diagnose.fromJson(Map<String, dynamic> json) {
+    Disease parseDisease(String rawDisease) {
+      try {
+        // If it’s already valid JSON, decode it
+        final decoded = jsonDecode(rawDisease) as Map<String, dynamic>;
+        return Disease.fromJson(decoded);
+      } catch (e) {
+        print('Failed to parse disease: $rawDisease, error: $e');
+        // Handle old format like "{key = value;}"
+        final fallbackMap = <String, String>{};
+        rawDisease.split(';').forEach((line) {
+          final parts = line.split('=').map((p) => p.trim()).toList();
+          if (parts.length == 2) {
+            fallbackMap[parts[0]] = parts[1];
+          }
+        });
+        return Disease(
+          id: fallbackMap['id'] ?? 'unknown',
+          name: fallbackMap['name'] ?? 'Unknown Disease',
+          description: fallbackMap['description'] ?? 'N/A',
+          affectedPart:
+              fallbackMap['affectedPart'] != null
+                  ? DiseasePart.fromJson(fallbackMap['affectedPart']!)
+                  : null,
+          type:
+              fallbackMap['type'] != null
+                  ? DiseaseType.fromJson(fallbackMap['type']!)
+                  : DiseaseType.bacterial,
+          symptoms: fallbackMap['symptoms'] ?? 'N/A',
+          management: fallbackMap['management'] ?? 'N/A',
+          imageUrl: fallbackMap['imageUrl'],
+        );
+      }
+    }
+
+    int parseTimestamp(dynamic value) {
+      if (value is int) return value;
+      if (value is String) return int.parse(value);
+      return DateTime.now().millisecondsSinceEpoch; // Fallback
+    }
+
     return Diagnose(
       id: json['id'] as String,
-      disease: Disease.fromJson(json['disease'] as Map<String, dynamic>),
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      disease: parseDisease(json['disease'] as String),
+      timestamp: DateTime.fromMillisecondsSinceEpoch(
+        parseTimestamp(json['timestamp']),
+      ),
       imagePath: json['imagePath'] as String,
       confidence: (json['confidence'] as num).toDouble(),
       userId: json['userId'] as String?,
+      isSaved: (json['isSaved'] as int?) == 1,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'disease': disease.toJson(),
-    'timestamp': timestamp.toIso8601String(),
-    'imagePath': imagePath,
-    'confidence': confidence,
-    'userId': userId,
-  };
+  Map<String, dynamic> toJson() {
+    final result = {
+      'id': id,
+      'disease': jsonEncode(disease.toJson()),
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'imagePath': imagePath,
+      'confidence': confidence,
+      'userId': userId,
+      'isSaved': isSaved == true ? 1 : 0,
+    };
+    return result;
+  }
 }
 
 class User {

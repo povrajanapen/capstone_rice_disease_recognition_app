@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:capstone_dr_rice/models/disease.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/report/report_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'image_picker_widget.dart';
 import 'disease_type_dropdown.dart';
 import '../../../widgets/input/textfield_input.dart';
@@ -32,6 +34,7 @@ class ReportEditMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageProvider languageProvider = Provider.of<LanguageProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -76,16 +79,16 @@ class ReportEditMode extends StatelessWidget {
         // disease name input
         TextfieldInput(
           controller: nameController,
-          label: "Name",
-          hint: "Type here...",
+          label: languageProvider.translate("Name"),
+          hint: languageProvider.translate("Type here..."),
         ),
 
         // description input
         SizedBox(height: RiceSpacings.m),
         TextfieldInput(
           controller: descriptionController,
-          label: "Description",
-          hint: "Type here...",
+          label: languageProvider.translate("Description"),
+          hint: languageProvider.translate("Type here..."),
           maxLines: 3,
         ),
         SizedBox(height: RiceSpacings.m),
@@ -99,11 +102,8 @@ class ReportEditMode extends StatelessWidget {
         // submit button
         SizedBox(height: RiceSpacings.xl),
         RiceButton(
-          text: currentMode == ReportScreenMode.create ? "Submit" : "Update",
-          icon:
-              currentMode == ReportScreenMode.create
-                  ? Icons.upload
-                  : Icons.edit,
+          text: currentMode == ReportScreenMode.create ? languageProvider.translate("Submit") : languageProvider.translate("Update"),
+          icon: currentMode == ReportScreenMode.create ? Icons.upload : Icons.edit,
           onPressed: () => submitReport(),
           type: RiceButtonType.primary,
         ),

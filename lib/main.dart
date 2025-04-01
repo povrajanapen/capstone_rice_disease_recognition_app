@@ -1,3 +1,4 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:capstone_dr_rice/widgets/navigation/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => DiagnosisProvider()),
         ChangeNotifierProvider(create: (context) => ReportProvider()),
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
+
 
       ],
       child: MyApp(),

@@ -1,12 +1,13 @@
 import 'package:capstone_dr_rice/models/disease_data.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
-import 'package:capstone_dr_rice/screens/scan/widgets/detail_card_widget.dart';
-import 'package:capstone_dr_rice/theme/theme.dart';
+import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:provider/provider.dart';
 import 'widgets/result_image_widget.dart';
 import 'widgets/prediction_card_widget.dart';
+import 'widgets/detail_card_widget.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class ResultScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _ResultScreenState extends State<ResultScreen>
     flutterTts.setLanguage("en-US");
     flutterTts.setPitch(1.0);
     _tabController = TabController(length: 2, vsync: this);
+    _addRecentDiagnosis();
   }
 
   @override
@@ -56,7 +58,7 @@ class _ResultScreenState extends State<ResultScreen>
         );
   }
 
-  Future<void> _saveDiagnosis(BuildContext context) async {
+  void _addRecentDiagnosis() async {
     final disease = await _getDiseaseFromResult();
     final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
     final diagnose = Diagnose(
@@ -68,13 +70,73 @@ class _ResultScreenState extends State<ResultScreen>
           double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
       userId: null,
     );
-    context.read<DiagnosisProvider>().addDiagnosis(
-      diagnose,
-      widget.imagePath,
+
+    // Check for duplicates
+    final provider = context.read<DiagnosisProvider>();
+    final recentDiagnoses = provider.recentDiagnoses;
+    final isDuplicate = recentDiagnoses.any(
+      (d) =>
+          d.imagePath == diagnose.imagePath &&
+          d.disease.name == diagnose.disease.name &&
+          d.confidence == diagnose.confidence,
     );
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Diagnosis saved')));
+
+    if (!isDuplicate) {
+      await provider.addDiagnosis(
+        diagnose,
+        widget.imagePath,
+        save: false, 
+      );
+    } else {
+      print('Skipping duplicate diagnosis: $diagnosisId');
+    }
+  }
+
+  Future<void> _saveDiagnosis(BuildContext context, LanguageProvider languageProvider) async {
+    // final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final disease = await _getDiseaseFromResult();
+    final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
+    final diagnose = Diagnose(
+      id: diagnosisId,
+      disease: disease,
+      timestamp: DateTime.now(),
+      imagePath: widget.imagePath,
+      confidence:
+          double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
+      userId: null,
+    );
+    
+    // Check for duplicates in saved diagnoses
+    final provider = context.read<DiagnosisProvider>();
+    final savedDiagnoses = provider.savedDiagnoses;
+    final isDuplicate = savedDiagnoses.any(
+      (d) =>
+          d.imagePath == diagnose.imagePath &&
+          d.disease.name == diagnose.disease.name &&
+          d.confidence == diagnose.confidence,
+    );
+
+    // if (!isDuplicate) {
+    //   await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis saved'))));
+    // } else {
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis already saved'))));
+    // }
+    if (!isDuplicate) {
+      await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Diagnosis saved'))),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Diagnosis already saved'))),
+      );
+    }
+
   }
 
   @override
@@ -82,70 +144,59 @@ class _ResultScreenState extends State<ResultScreen>
     final confidence =
         double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
     final confidencePercent = '${(confidence * 100).toStringAsFixed(2)}%';
+    final diagnosisProvider = context.watch<DiagnosisProvider>();
+    diagnosisProvider.getRecentDiagnoses();
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: RiceColors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: RiceColors.white,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          'Analysis Result',
-          style: TextStyle(color: RiceColors.neutralDark, fontWeight: FontWeight.w600),
+          languageProvider.translate('Analysis Result'),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
-        iconTheme:  IconThemeData(color: RiceColors.neutralDark),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Image Section
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 10,
-                ), // Added padding around image
+                ),
                 child: SizedBox(
-                  width:
-                      MediaQuery.of(context).size.width *
-                      0.98, 
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.32,
                   child: ResultImageWidget(imagePath: widget.imagePath),
                 ),
               ),
-              // Results Section
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 4.0,
-                      ), 
-                      child: Text(
-                        'Results',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: RiceColors.neutralDark,
-                        ),
+                    Text(
+                      languageProvider.translate('Results'),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // Prediction Card
-
                     PredictionCardWidget(
                       result: widget.result,
                       confidence: confidence,
                       confidencePercent: confidencePercent,
-                      onSave: () => _saveDiagnosis(context),
+                      onSave: () => _saveDiagnosis(context, languageProvider),
                     ),
                     const SizedBox(height: 10),
-
-                    // Details Section
-
                     FutureBuilder<Disease>(
                       future: _getDiseaseFromResult(),
                       builder: (context, snapshot) {
@@ -167,17 +218,21 @@ class _ResultScreenState extends State<ResultScreen>
                             );
                         return DetailCardWidget(
                           tabController: _tabController,
-                           flutterTts: flutterTts,
-                            disease: disease);
+                          flutterTts: flutterTts,
+                          disease: disease,
+                        );
                       },
                     ),
                     const SizedBox(height: 16),
-
-
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ScanScreen()),
+                          )
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -186,8 +241,8 @@ class _ResultScreenState extends State<ResultScreen>
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Scan Again',
+                        child: Text(
+                          languageProvider.translate('Scan Again'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -195,7 +250,6 @@ class _ResultScreenState extends State<ResultScreen>
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -206,6 +260,3 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 }
-
-
-

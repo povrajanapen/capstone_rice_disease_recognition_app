@@ -1,17 +1,20 @@
 // common_diseases_screen.dart
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/models/disease_data.dart';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/common%20disease/widgets/disease_card.dart';
 import 'package:capstone_dr_rice/screens/common%20disease/disease_detail_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CommonDiseasesScreen extends StatelessWidget {
   const CommonDiseasesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+        final languageProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -19,7 +22,7 @@ class CommonDiseasesScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Common Rice Diseases',
+          languageProvider.translate('Common Rice Diseases'),
           style: RiceTextStyles.body.copyWith(color: RiceColors.neutralDark),
         ),
         backgroundColor: RiceColors.backgroundAccent,
@@ -83,3 +86,4 @@ class CommonDiseasesScreen extends StatelessWidget {
     );
   }
 }
+

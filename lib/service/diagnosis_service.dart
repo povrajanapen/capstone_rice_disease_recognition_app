@@ -1,5 +1,3 @@
-
-
 import '../models/diagnosis_model.dart';
 
 class DiagnosisService {
