@@ -44,12 +44,12 @@ class _ReportScreenState extends State<ReportScreen> {
         text: widget.existingReport!.disease.description,
       );
       selectedDiseasePart =
-          widget.existingReport!.disease.affectedPart ?? DiseasePart.leaf;
+          widget.existingReport!.disease.affectedPart ?? DiseasePart.leaves;
       selectedImagePath = widget.existingReport!.imagePath;
     } else {
       nameController = TextEditingController();
       descriptionController = TextEditingController();
-      selectedDiseasePart = DiseasePart.leaf;
+      selectedDiseasePart = DiseasePart.leaves;
     }
 
     // Set initial mode
@@ -93,26 +93,15 @@ class _ReportScreenState extends State<ReportScreen> {
 
     if (isComplete) {
       // Create or update disease
-      final disease =
-          widget.existingReport != null
-              ? Disease(
-                id: widget.existingReport!.disease.id,
-                name: nameController.text,
-                description: descriptionController.text,
-                type: widget.existingReport!.disease.type,
-                scanDate: widget.existingReport!.disease.scanDate,
-                accuracy: widget.existingReport!.disease.accuracy,
-                affectedPart: selectedDiseasePart,
-              )
-              : Disease(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                name: nameController.text,
-                description: descriptionController.text,
-                type: DiseaseType.fungal, // Default type
-                scanDate: DateTime.now(),
-                accuracy: 0.0, // Not applicable for user reports
-                affectedPart: selectedDiseasePart,
-              );
+      final disease = Disease(
+        id: widget.existingReport?.disease.id ?? DateTime.now().toString(),
+        type: widget.existingReport?.disease.type ?? DiseaseType.bacterial,
+        name: nameController.text,
+        description: descriptionController.text,
+        symptoms: '',
+        management: '',
+        affectedPart: selectedDiseasePart,
+      );
 
       // Create the report with the image path
       final report = UserReport(

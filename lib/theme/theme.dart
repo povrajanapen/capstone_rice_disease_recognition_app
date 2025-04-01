@@ -15,6 +15,7 @@ class RiceColors {
   static Color neutralLighter     = const Color(0xFFEEF4DB);
 
   static Color greyLight          = const Color(0xFFE2E2E2);
+  static Color grey               = const Color.fromARGB(255, 86, 86, 86);
 
   static Color red              = const Color(0xFFEB463D);
   static Color white              = Colors.white;
@@ -50,6 +51,8 @@ class RiceColors {
 class RiceTextStyles {
   static TextStyle heading = GoogleFonts.dmSans(fontSize: 35, fontWeight: FontWeight.w800);
 
+  static TextStyle subheadline = GoogleFonts.dmSans(fontSize: 24, fontWeight: FontWeight.w800);
+
   static TextStyle body = GoogleFonts.dmSans(fontSize: 20, fontWeight: FontWeight.w800);
 
   static TextStyle label = GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w500);
@@ -68,6 +71,7 @@ class RiceSpacings {
   static const double xxl = 40; 
 
   static const double radius = 10; 
+  static const double radiusMedium = 12;
   static const double radiusLarge = 15; 
 }
 

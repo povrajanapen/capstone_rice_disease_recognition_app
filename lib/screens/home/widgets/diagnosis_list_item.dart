@@ -1,13 +1,13 @@
 // lib/widgets/home/diagnosis_list_item.dart
+import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:flutter/material.dart';
 
-import '../../../models/diagnosis_model.dart';
 import '../../../utils/date_time_util.dart';
 
 class DiagnosisListItem extends StatelessWidget {
-  final DiagnosisModel diagnosis;
+  final Diagnose diagnosis;
   final VoidCallback onTap;
   final VoidCallback onMoreTap;
 
@@ -45,7 +45,7 @@ class DiagnosisListItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(RiceSpacings.radius),
       child: Image.asset(
-        diagnosis.validImageUrl,
+        diagnosis.imagePath,
         width: 64,
         height: 64,
         fit: BoxFit.cover,
@@ -81,7 +81,7 @@ class DiagnosisListItem extends StatelessWidget {
               children: [
                 //// Scan Date
                 Text(
-                  getRelativeTime(diagnosis.scanDate),
+                  getRelativeTime(diagnosis.timestamp),
                   style: RiceTextStyles.label.copyWith(
                     color: Colors.grey,
                     fontSize: 11,

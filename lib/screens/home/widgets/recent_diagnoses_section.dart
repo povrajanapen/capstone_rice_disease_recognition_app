@@ -1,23 +1,23 @@
+import 'package:capstone_dr_rice/screens/scan/result_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
+import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
 import 'package:flutter/material.dart';
-
-import '../../../models/diagnosis_model.dart';
+import 'package:provider/provider.dart';
 import 'diagnosis_controller.dart';
 import 'diagnosis_list_item.dart';
 
 class RecentDiagnosesSection extends StatelessWidget {
-  final List<DiagnosisModel> diagnoses;
   final DiagnosisController controller;
 
-  const RecentDiagnosesSection({
-    super.key,
-    required this.diagnoses,
-    required this.controller,
-  });
+  const RecentDiagnosesSection({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final recentDiagnoses = context.watch<DiagnosisProvider>().getRecentDiagnoses();
+
+    return recentDiagnoses.isEmpty ? 
+      Text('No recent Diagnoses', style: RiceTextStyles.body) :
+      Container(
       decoration: BoxDecoration(
         color: RiceColors.neutralLighter,
         borderRadius: BorderRadius.circular(RiceSpacings.radiusLarge),
@@ -29,16 +29,37 @@ class RecentDiagnosesSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Recent Diagnose', style: RiceTextStyles.body),
           const SizedBox(height: 1),
-          ...diagnoses.map(
+          Text(
+            'Recent Diagnoses',
+            style: RiceTextStyles.label.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: RiceTextStyles.body.fontSize,
+            ),
+          ),
+          
+          ...recentDiagnoses.map(
             (diagnosis) => DiagnosisListItem(
               diagnosis: diagnosis,
-              onTap: () => controller.navigateToDiagnosisDetails(context, diagnosis),
+              onTap:
+                  () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ResultScreen(
+                              imagePath: diagnosis.imagePath,
+                              result: {
+                                'class': diagnosis.disease.name,
+                                'confidence': diagnosis.confidence,
+                              },
+                            ),
+                      ),
+                    ),
+                  },
               onMoreTap: () => {},
-              //controller.showDiagnosisOptions(context, diagnosis)
             ),
-          ), 
+          ),
         ],
       ),
     );

@@ -1,8 +1,9 @@
 //// Helper function to get the latest successful scan
 library;
-import '../dummy_data/dummy_data.dart';
 import '../models/disease.dart';
 import '../models/scan.dart';
+
+List<Scan> dummyScans = [];
 
 Scan? getLatestSuccessfulScan() {
   return dummyScans.firstWhere(

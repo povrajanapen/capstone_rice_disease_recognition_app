@@ -1,3 +1,4 @@
+import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,8 @@ class SaveScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Access the saved diagnoses from provider
-    final savedDiagnoses = context.watch<DiagnosisProvider>().savedDiagnoses;
+    List<Diagnose> savedDiagnoses = context.watch<DiagnosisProvider>().savedDiagnoses;
+    print(savedDiagnoses);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,33 +31,25 @@ class SaveScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final diagnosis = savedDiagnoses[index];
 
-                  final String diagnosisId =
-                      diagnosis['id'] as String? ??
-                      DateTime.now().millisecondsSinceEpoch.toString();
-                  //// Save disease tiles
                   return Container(
-                    //color: RiceColors.backgroundAccent,
                     padding: EdgeInsets.symmetric(vertical: 8),
                     margin: const EdgeInsets.symmetric(
                       horizontal: RiceSpacings.s,
-                      vertical: RiceSpacings.l,
+                      vertical: RiceSpacings.s,
                     ),
                     decoration: BoxDecoration(
                       color: RiceColors.backgroundAccent,
                       borderRadius: BorderRadius.circular(RiceSpacings.s),
                       border: Border.all(color: RiceColors.neutral, width: 0.5),
                     ),
-
                     child: ListTile(
-                      //// disease image
+                      // Disease image
                       leading:
-                          diagnosis['imagePath'] != null
+                          diagnosis.imagePath != null
                               ? ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  RiceSpacings.s,
-                                ),
+                                borderRadius: BorderRadius.circular(8),
                                 child: Image.file(
-                                  File(diagnosis['imagePath']),
+                                  File(diagnosis.imagePath),
                                   width: 85,
                                   height: 85,
                                   fit: BoxFit.cover,
@@ -73,33 +67,36 @@ class SaveScreen extends StatelessWidget {
                                 ),
                               )
                               : const Icon(Icons.image_not_supported),
+                      
 
-                      //// disease name
+                      // Disease name
                       title: Text(
-                        diagnosis['name'] ?? 'Unknown Disease',
-                        style: RiceTextStyles.button,
+                        diagnosis.disease.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                       subtitle: Text(
-                        'Accuracy: ${((diagnosis['accuracy'] ?? 0.0) * 100).toInt()}%',
-                        style: RiceTextStyles.button.copyWith(
-                          fontSize: 15,
-                          color: RiceColors.neutral,
+                        'Confidence: ${((diagnosis.confidence as double? ?? 0.0) * 100).toStringAsFixed(1)}%',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
                         ),
                       ),
                       onTap: () {
-                        // Navigate to the ResultScreen with the selected diagnosis
-                        if (diagnosis['imagePath'] != null) {
+                        if (diagnosis.imagePath != null) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder:
                                   (context) => ResultScreen(
-                                    imagePath: diagnosis['imagePath'],
+                                    imagePath: diagnosis.imagePath,
                                     result: {
-                                      'name': diagnosis['name'],
-                                      'description': diagnosis['description'],
-                                      'accuracy': diagnosis['accuracy'],
-                                      'id': diagnosisId,
+                                      'class':
+                                          diagnosis.disease.name, // Changed to 'class' to match ResultScreen
+                                      'confidence': diagnosis.confidence,
                                     },
                                   ),
                             ),
@@ -115,16 +112,16 @@ class SaveScreen extends StatelessWidget {
                       },
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
+                        color: Colors.grey,
                         onPressed: () {
-                          // Handle delete functionality
                           context.read<DiagnosisProvider>().removeDiagnosis(
-                            diagnosis['id'],
+                            diagnosis.id,
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Diagnosis removed'),
-                            duration: Duration(milliseconds: 800),
+                            const SnackBar(
+                              content: Text('Diagnosis removed'),
+                              duration: Duration(milliseconds: 800),
                             ),
-                            
                           );
                         },
                       ),
