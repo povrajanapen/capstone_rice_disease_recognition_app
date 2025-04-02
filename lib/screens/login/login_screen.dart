@@ -1,9 +1,13 @@
+
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../widgets/action/rice_button.dart';
 import '../../widgets/input/textfield_input.dart';
 import '../../service/auth_service.dart';
-import '../../widgets/navigation/bottom_nav_bar.dart';
+import '../../provider/language_provider.dart';
+import '../signup/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,114 +22,158 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+
+    if (email.isEmpty || password.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Please fill in all fields'))),
+        );
+      }
+      return;
+    }
+
+    if (!_isValidEmail(email)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Please enter a valid email address'))),
+        );
+      }
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      await AuthService().signInWithEmailAndPassword(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-      );
+      await AuthService().signInWithEmailAndPassword(email, password);
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
-          (route) => false, // Remove all previous routes
-        );
+        Navigator.pop(context, 2); // Pass 2 to indicate the desired index
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Login failed:') + ' $e')),
+        );
       }
     } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
-        });
+        }); // Properly closed
       }
     }
   }
 
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: RiceColors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(RiceSpacings.xl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Close button
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  Navigator.pop(context); // Close the modal
-                },
-              ),
-            ),
-            const SizedBox(height: RiceSpacings.m),
-            // Title
-            Center(
-              child: Text(
-                'Login',
-                style: RiceTextStyles.body.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(RiceSpacings.xl),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  padding: const EdgeInsets.only(right: RiceSpacings.xl),
+                  icon: Icon(Icons.close, color: RiceColors.neutralDark),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
               ),
-            ),
-            const SizedBox(height: RiceSpacings.xl),
-            // Email Address TextField
-            TextfieldInput(
-              label: 'Email Address',
-              controller: _emailController,
-              hint: 'Enter your email address',
-            ),
-            const SizedBox(height: RiceSpacings.m),
-            // Password TextField
-            TextfieldInput(
-              label: 'Password',
-              controller: _passwordController,
-              hint: 'Enter your password',
-            ),
-            const SizedBox(height: RiceSpacings.s),
-            // Forgot Password Link
-            Align(
-              alignment: Alignment.centerRight,
-              child: GestureDetector(
-                onTap: () {
-                  // Handle forgot password logic here
-                },
+              const SizedBox(height: RiceSpacings.m),
+              Center(
                 child: Text(
-                  'Forgot password?',
-                  style: RiceTextStyles.label.copyWith(
-                    fontSize: 14,
-                    color: RiceColors.neutral,
-                    decoration: TextDecoration.underline,
-                    decorationColor: RiceColors.neutral,
+                  languageProvider.translate('Login'),
+                  style: RiceTextStyles.body.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: RiceColors.neutralDark,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: RiceSpacings.xl),
-            // Login Button
-            Center(
-              child:
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : RiceButton(
-                        text: 'Login',
+              const SizedBox(height: RiceSpacings.xl),
+              TextfieldInput(
+                label: languageProvider.translate('Email Address'),
+                controller: _emailController,
+                hint: languageProvider.translate('Enter your email address'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: RiceSpacings.m),
+              TextfieldInput(
+                label: languageProvider.translate('Password'),
+                controller: _passwordController,
+                hint: languageProvider.translate('Enter your password'),
+                obscureText: true,
+              ),
+              const SizedBox(height: RiceSpacings.s),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const SignupScreen(),
+                      );
+                    },
+                    child: Text(
+                      languageProvider.translate('Create account'),
+                      style: RiceTextStyles.label.copyWith(
+                        fontSize: 14,
+                        color: RiceColors.neutral,
+                        decoration: TextDecoration.underline,
+                        decorationColor: RiceColors.neutral,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: Implement forgot password logic
+                    },
+                    child: Text(
+                      languageProvider.translate('Forgot password?'),
+                      style: RiceTextStyles.label.copyWith(
+                        fontSize: 14,
+                        color: RiceColors.neutral,
+                        decoration: TextDecoration.underline,
+                        decorationColor: RiceColors.neutral,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: RiceSpacings.xl),
+              Center(
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(RiceColors.neutralDark),
+                      )
+                    : RiceButton(
+                        text: languageProvider.translate('Login'),
                         icon: Icons.login,
                         type: RiceButtonType.primary,
                         onPressed: _login,
                       ),
-            ),
-          ],
+              ),
+              const SizedBox(height: RiceSpacings.xl),
+            ],
+          ),
         ),
       ),
     );

@@ -1,36 +1,36 @@
+
 import 'package:capstone_dr_rice/models/disease_data.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
 import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
+import 'package:capstone_dr_rice/screens/scan/widgets/detail_card_widget.dart';
+import 'package:capstone_dr_rice/screens/scan/widgets/prediction_card_widget.dart';
+import 'package:capstone_dr_rice/screens/scan/widgets/result_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:provider/provider.dart';
-import 'widgets/result_image_widget.dart';
-import 'widgets/prediction_card_widget.dart';
-import 'widgets/detail_card_widget.dart';
 
-class ResultScreen extends StatefulWidget {
+class DiagnoseDetailScreen extends StatefulWidget {
   final String imagePath;
   final Map<String, dynamic> result;
 
-  const ResultScreen({
+  const DiagnoseDetailScreen({
     super.key,
     required this.imagePath,
     required this.result,
   });
 
   @override
-  _ResultScreenState createState() => _ResultScreenState();
+  _DiagnoseDetailScreenState createState() => _DiagnoseDetailScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderStateMixin {
+class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _addRecentDiagnosis();
   }
 
   @override
@@ -51,34 +51,6 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
           symptoms: 'No specific information available.',
           management: 'No specific management available.',
         );
-  }
-
-  void _addRecentDiagnosis() async {
-    final disease = await _getDiseaseFromResult();
-    final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
-    final diagnose = Diagnose(
-      id: diagnosisId,
-      disease: disease,
-      timestamp: DateTime.now(),
-      imagePath: widget.imagePath,
-      confidence: double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
-      userId: null,
-    );
-
-    final provider = context.read<DiagnosisProvider>();
-    final recentDiagnoses = provider.recentDiagnoses;
-    final isDuplicate = recentDiagnoses.any(
-      (d) =>
-          d.imagePath == diagnose.imagePath &&
-          d.disease.name == diagnose.disease.name &&
-          d.confidence == diagnose.confidence,
-    );
-
-    if (!isDuplicate) {
-      await provider.addDiagnosis(diagnose, widget.imagePath, save: false);
-    } else {
-      print('Skipping duplicate diagnosis: $diagnosisId');
-    }
   }
 
   Future<void> _saveDiagnosis(BuildContext context, LanguageProvider languageProvider) async {

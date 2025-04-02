@@ -181,6 +181,8 @@ class Diagnose {
       userId: json['userId'] as String?,
       isSaved: (json['isSaved'] as int?) == 1,
     );
+
+    
   }
 
   Map<String, dynamic> toJson() {
@@ -201,28 +203,57 @@ class User {
   final String id;
   final String username;
   final String? email;
+  final String? profileImageUrl;
   final List<Diagnose>? diagnoses;
 
-  User({required this.id, required this.username, this.email, this.diagnoses});
+  User({
+    required this.id,
+    required this.username,
+    this.email,
+    this.profileImageUrl,
+    this.diagnoses,
+  });
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  // Convert to Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'username': username,
+      'email': email,
+      'profileImageUrl': profileImageUrl,
+    };
+  }
+
+  // Convert to JSON
+  Map<String, dynamic> toJson() => toMap();
+
+  // Create from Map from Firestore
+  factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: json['id'] as String,
-      username: json['username'] as String,
-      email: json['email'] as String?,
-      diagnoses:
-          json['diagnoses'] != null
-              ? (json['diagnoses'] as List)
-                  .map((d) => Diagnose.fromJson(d as Map<String, dynamic>))
-                  .toList()
-              : null,
+      id: map['id'] ?? '',
+      username: map['username'] ?? '',
+      email: map['email'],
+      profileImageUrl: map['profileImageUrl'],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'username': username,
-    'email': email,
-    'diagnoses': diagnoses?.map((d) => d.toJson()).toList(),
-  };
+  // Create from JSON
+  factory User.fromJson(Map<String, dynamic> json) => User.fromMap(json);
+
+  // Helper method to update fields
+  User copyWith({
+    String? id,
+    String? username,
+    String? email,
+    String? profileImageUrl,
+    List<Diagnose>? diagnoses,
+  }) {
+    return User(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      diagnoses: diagnoses ?? this.diagnoses,
+    );
+  }
 }
