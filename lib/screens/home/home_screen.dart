@@ -42,9 +42,18 @@ class _HomeScreenState extends State<HomeScreen> {
       case '/scan':
         Navigator.push(
           context,
-      
-          MaterialPageRoute(builder: (context) => ScanScreen(),
-          
+
+          MaterialPageRoute(
+            builder: (context) => ScanScreen(),
+
+            // ResultScreen(
+            //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
+            //     result: {
+            //       'name': 'Healthy',
+            //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
+            //       'accuracy': 0.95, // Default confidence level
+            //     },
+            //   ),
           ),
         );
         break;

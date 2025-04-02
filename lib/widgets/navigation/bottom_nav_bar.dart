@@ -1,5 +1,6 @@
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/home/home_screen.dart';
+import 'package:capstone_dr_rice/screens/profile/profile_screen.dart';
 import 'package:capstone_dr_rice/screens/saved%20diagnosis/saved_diagnosis_screen.dart';
 import 'package:capstone_dr_rice/screens/get%20started/get_started_screen.dart';
 import 'package:capstone_dr_rice/screens/profile/profile_screen.dart';
