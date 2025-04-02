@@ -50,6 +50,7 @@ dependencies:
   firebase_auth: ^5.5.1
   cloud_firestore: ^5.5.0
   url_launcher: ^6.3.1
+  path_provider: ^2.1.5
 
 
 dev_dependencies:
@@ -80,6 +81,9 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/data/disease_data.json
+    - assets/data/en.json
+    - assets/data/kh.json
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

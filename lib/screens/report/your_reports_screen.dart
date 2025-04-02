@@ -1,5 +1,6 @@
-import 'dart:io';
 
+import 'dart:io';
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ class YourReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final reportProvider = Provider.of<ReportProvider>(context);
     final reports = reportProvider.reports;
+    final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
@@ -22,7 +24,7 @@ class YourReportsScreen extends StatelessWidget {
         backgroundColor: RiceColors.backgroundAccent,
         elevation: 0,
         title: Text(
-          "Your Reports",
+          languageProvider.translate("Your Reports"),
           style: RiceTextStyles.body.copyWith(
             color: RiceColors.neutralDark,
             fontWeight: FontWeight.bold,
@@ -32,21 +34,19 @@ class YourReportsScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close, color: RiceColors.neutralDark),
-          onPressed:
-              () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
-      body:
-          reports.isEmpty
-              ? _buildEmptyState()
-              : ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
-                itemCount: reports.length,
-                itemBuilder: (context, index) {
-                  final report = reports[index];
-                  return _buildReportCard(context, report, reportProvider);
-                },
-              ),
+      body: reports.isEmpty
+          ? _buildEmptyState(languageProvider)
+          : ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: RiceSpacings.m),
+              itemCount: reports.length,
+              itemBuilder: (context, index) {
+                final report = reports[index];
+                return _buildReportCard(context, report, reportProvider, languageProvider);
+              },
+            ),
     );
   }
 
@@ -54,23 +54,21 @@ class YourReportsScreen extends StatelessWidget {
     BuildContext context,
     UserReport report,
     ReportProvider reportProvider,
+    LanguageProvider languageProvider,
   ) {
     return GestureDetector(
       onTap: () async {
         final updatedReport = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => ReportScreen(
-                  existingReport: report,
-                  mode: ReportScreenMode.view,
-                ),
+            builder: (context) => ReportScreen(
+              existingReport: report,
+              mode: ReportScreenMode.view,
+            ),
           ),
         );
         if (updatedReport != null) {
-          reportProvider.updateReport(
-            updatedReport,
-          ); // Update the report in the provider
+          reportProvider.updateReport(updatedReport);
         }
       },
       child: Container(
@@ -93,7 +91,6 @@ class YourReportsScreen extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Disease image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(RiceSpacings.radius),
                     child: Image.file(
@@ -104,8 +101,6 @@ class YourReportsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: RiceSpacings.m),
-
-                  // Disease details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,29 +112,12 @@ class YourReportsScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
-                        // Affected Part
                         SizedBox(height: 5),
                         if (report.disease.affectedPart != null)
-                          Row(
-                            children: [
-                              Text(
-                                'Part of Disease: ',
-                                style: RiceTextStyles.label.copyWith(
-                                  color: RiceColors.neutral,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                report.disease.affectedPart!.name.capitalize(),
-                                style: RiceTextStyles.label.copyWith(
-                                  color: RiceColors.neutral,
-                                ),
-                              ),
-                            ],
+                          _buildTextRow(
+                            languageProvider.translate('Part of Disease'),
+                            languageProvider.translate(report.disease.affectedPart!.name),
                           ),
-
-                        // Description
                         SizedBox(height: RiceSpacings.s),
                         Text(
                           report.disease.description,
@@ -152,11 +130,10 @@ class YourReportsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Remove button
                   IconButton(
                     icon: Icon(Icons.delete, color: RiceColors.red),
                     onPressed: () {
-                      _confirmDelete(context, report, reportProvider);
+                      _confirmDelete(context, report, reportProvider, languageProvider);
                     },
                   ),
                 ],
@@ -172,57 +149,55 @@ class YourReportsScreen extends StatelessWidget {
     BuildContext context,
     UserReport report,
     ReportProvider reportProvider,
+    LanguageProvider languageProvider,
   ) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(
-              "Delete Report",
-              style: RiceTextStyles.body.copyWith(
-                color: RiceColors.neutralDark,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text(
-              "Are you sure you want to delete this report?",
-              style: RiceTextStyles.label.copyWith(
-                fontSize: 16,
-                color: RiceColors.neutralDark,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context), // Cancel
-                child: Text(
-                  "Cancel",
-                  style: RiceTextStyles.button.copyWith(
-                    fontSize: 18,
-                    color: RiceColors.neutralDark,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  reportProvider.deleteReport(
-                    report.disease.id,
-                  ); // Delete the report
-                  Navigator.pop(context); // Close the dialog
-                },
-                child: Text(
-                  "Delete",
-                  style: RiceTextStyles.button.copyWith(
-                    fontSize: 18,
-                    color: RiceColors.red,
-                  ),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(
+          languageProvider.translate("Delete Report"),
+          style: RiceTextStyles.body.copyWith(
+            color: RiceColors.neutralDark,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        content: Text(
+          languageProvider.translate("Are you sure you want to delete this report"),
+          style: RiceTextStyles.label.copyWith(
+            fontSize: 16,
+            color: RiceColors.neutralDark,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              languageProvider.translate("Cancel"),
+              style: RiceTextStyles.button.copyWith(
+                fontSize: 18,
+                color: RiceColors.neutralDark,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              reportProvider.deleteReport(report.disease.id);
+              Navigator.pop(context);
+            },
+            child: Text(
+              languageProvider.translate("Delete"),
+              style: RiceTextStyles.button.copyWith(
+                fontSize: 18,
+                color: RiceColors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(LanguageProvider languageProvider) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -230,7 +205,7 @@ class YourReportsScreen extends StatelessWidget {
           Icon(Icons.description_outlined, size: 64, color: RiceColors.neutral),
           SizedBox(height: RiceSpacings.m),
           Text(
-            "No reports yet",
+            languageProvider.translate("No reports yet"),
             style: RiceTextStyles.body.copyWith(
               color: RiceColors.neutralDark,
               fontSize: 18,
@@ -238,11 +213,32 @@ class YourReportsScreen extends StatelessWidget {
           ),
           SizedBox(height: RiceSpacings.s),
           Text(
-            "Your submitted reports will appear here",
+            languageProvider.translate("Your submitted reports will appear here"),
             style: RiceTextStyles.label.copyWith(color: RiceColors.neutral),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildTextRow(String label, String value) {
+    return Row(
+      children: [
+        Text(
+          "$label: ",
+          style: RiceTextStyles.label.copyWith(
+            color: RiceColors.neutral,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          value,
+          style: RiceTextStyles.label.copyWith(
+            color: RiceColors.neutral,
+          ),
+        ),
+      ],
+    );
+  }
 }
+

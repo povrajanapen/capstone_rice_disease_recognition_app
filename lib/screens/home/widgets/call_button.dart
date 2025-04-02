@@ -12,8 +12,8 @@ class CallButton extends StatefulWidget {
 }
 
 class _CallButtonState extends State<CallButton> {
-  OverlayEntry? _overlayEntry; // Stores the dropdown overlay
-  final LayerLink _layerLink = LayerLink(); // Helps position the dropdown
+  OverlayEntry? _overlayEntry;
+  final LayerLink _layerLink = LayerLink();
 
   Future<void> _makePhoneCall() async {
     final Uri callUri = Uri(scheme: 'tel', path: widget.phoneNumber);
@@ -34,12 +34,21 @@ class _CallButtonState extends State<CallButton> {
 
   void _showDropdown() {
     _overlayEntry = OverlayEntry(
-      builder:
-          (context) => Positioned(
+      builder: (context) => Stack(
+        children: [
+          // Transparent barrier to detect outside taps
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _removeDropdown,
+            child: Container(),
+          ),
+
+          // Dropdown content
+          Positioned(
             width: 160,
             child: CompositedTransformFollower(
               link: _layerLink,
-              offset: const Offset(0, 45), // Position dropdown below button
+              offset: const Offset(0, 45),
               child: Material(
                 elevation: 3,
                 borderRadius: BorderRadius.circular(10),
@@ -59,13 +68,15 @@ class _CallButtonState extends State<CallButton> {
                     leading: Icon(Icons.call, color: RiceColors.neutral),
                     onTap: () {
                       _makePhoneCall();
-                      _removeDropdown(); // Close dropdown after tap
+                      _removeDropdown();
                     },
                   ),
                 ),
               ),
             ),
           ),
+        ],
+      ),
     );
 
     Overlay.of(context).insert(_overlayEntry!);
