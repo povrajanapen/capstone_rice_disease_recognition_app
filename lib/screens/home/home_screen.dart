@@ -3,10 +3,12 @@ import 'package:capstone_dr_rice/screens/common%20disease/common_disease_screen.
 import 'package:capstone_dr_rice/screens/home/widgets/feature_buttons.dart';
 import 'package:capstone_dr_rice/screens/home/widgets/news_slider.dart';
 import 'package:capstone_dr_rice/screens/scan/scan_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../models/diagnosis_model.dart';
 import '../../service/diagnosis_service.dart';
 import '../../theme/theme.dart';
+import '../get started/get_started_screen.dart';
 import '../report/report_screen.dart';
 import '../scan/result_screen.dart';
 import 'widgets/app_header.dart';
@@ -44,25 +46,36 @@ class _HomeScreenState extends State<HomeScreen> {
       case '/scan':
         Navigator.push(
           context,
-      
-          MaterialPageRoute(builder: (context) => ScanScreen(),
-          
-          // ResultScreen(
-          //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
-          //     result: {
-          //       'name': 'Healthy',
-          //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
-          //       'accuracy': 0.95, // Default confidence level
-          //     },
-          //   ),
+
+          MaterialPageRoute(
+            builder: (context) => ScanScreen(),
+
+            // ResultScreen(
+            //     imagePath: 'assets/image/disease_thumbnail.jpg', // Placeholder image
+            //     result: {
+            //       'name': 'Healthy',
+            //       'description': 'A serious bacterial disease causing yellowing and drying of leaves', // Default class (Healthy)
+            //       'accuracy': 0.95, // Default confidence level
+            //     },
+            //   ),
           ),
         );
         break;
       case '/report':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ReportScreen()),
-        );
+        // Check if the user is logged in
+        if (FirebaseAuth.instance.currentUser != null) {
+          // Navigate to ReportScreen if logged in
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ReportScreen()),
+          );
+        } else {
+          // Navigate to GetStartedScreen if not logged in
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const GetStartedScreen()),
+          );
+        }
         break;
     }
   }

@@ -10,6 +10,11 @@ class GetStartedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: RiceColors.backgroundAccent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: RiceColors.neutralDark),
+      ),
       backgroundColor: RiceColors.backgroundAccent,
       body: Center(
         child: Column(
