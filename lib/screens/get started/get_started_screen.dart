@@ -14,6 +14,11 @@ class GetStartedScreen extends StatelessWidget {
     LanguageProvider languageProvider =
         Provider.of<LanguageProvider>(context);
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: RiceColors.backgroundAccent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: RiceColors.neutralDark),
+      ),
       backgroundColor: RiceColors.backgroundAccent,
       body: Center(
         child: Column(
