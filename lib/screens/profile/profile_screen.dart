@@ -1,7 +1,10 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
+import 'package:capstone_dr_rice/screens/report/your_reports_screen.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
 import 'package:capstone_dr_rice/widgets/display/rice_divider.dart';
 import 'package:capstone_dr_rice/widgets/navigation/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import '../../service/auth_service.dart';
 import 'profile_edit_screen.dart';
@@ -40,17 +43,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        MaterialPageRoute(
+          builder: (context) => const BottomNavBar(initialIndex: 2), // Set to Home tab
+        ),
       );
     }
   }
+ 
+  void _showLanguageDialog(BuildContext context, LanguageProvider languageProvider) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: RiceColors.backgroundAccent,
+      title: Text(
+        languageProvider.translate('Select Language'),
+        style: RiceTextStyles.body.copyWith(
+          color: RiceColors.neutralDark,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RiceButton(
+            text: 'English',
+            type: RiceButtonType.primary,
+            onPressed: () {
+              languageProvider.setLanguage('en');
+              Navigator.pop(context);
+            },
+          ),
+          const SizedBox(height: RiceSpacings.m),
+          RiceButton(
+            text: 'ភាសាខ្មែរ',
+            type: RiceButtonType.primary,
+            onPressed: () {
+              languageProvider.setLanguage('kh');
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            languageProvider.translate('Close'),
+            style: RiceTextStyles.button.copyWith(color: RiceColors.neutralDark),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: RiceColors.backgroundAccent,
       appBar: AppBar(
-        title: Text('Profile', style: RiceTextStyles.body),
+        title: Text(languageProvider.translate('Profile'), style: RiceTextStyles.body),
         centerTitle: true,
         backgroundColor: RiceColors.backgroundAccent,
         elevation: 0,
@@ -68,13 +123,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               radius: 50,
               backgroundImage:
                   userPhotoURL != null && userPhotoURL!.startsWith('http')
-                      ? NetworkImage(
-                        userPhotoURL!,
-                      ) // Use NetworkImage if photoURL is a valid URL
-                      : const AssetImage(
-                            'assets/images/profile_placeholder.png',
-                          )
-                          as ImageProvider,
+                      ? NetworkImage(userPhotoURL!)
+                      : const AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
             ),
             const SizedBox(height: RiceSpacings.m),
             Text(
@@ -95,18 +145,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.person, color: Colors.black),
-                title: Text('Edit Profile', style: RiceTextStyles.button),
+                title: Text(languageProvider.translate('Edit Profile'), style: RiceTextStyles.button),
                 trailing: const Icon(Icons.edit_outlined),
                 onTap: () async {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => ProfileEditScreen(
-                            userName: userName ?? 'No Name',
-                            userEmail: userEmail ?? 'No Email',
-                            userProfileImage: userPhotoURL,
-                          ),
+                      builder: (context) => ProfileEditScreen(
+                        userName: userName ?? 'No Name',
+                        userEmail: userEmail ?? 'No Email',
+                        userProfileImage: userPhotoURL,
+                      ),
                     ),
                   );
 
@@ -127,8 +176,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.language, color: Colors.black),
-                title: Text('Language', style: RiceTextStyles.button),
-                onTap: () {},
+                title: Text(
+                  languageProvider.translate('Language'),
+                  style: RiceTextStyles.button,
+                ),
+                onTap: () => _showLanguageDialog(context, languageProvider),
               ),
             ),
             const SizedBox(height: RiceSpacings.m),
@@ -139,15 +191,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.campaign, color: Colors.black),
-                title: Text('Your reports', style: RiceTextStyles.button),
-                onTap: () {},
+                title: Text(languageProvider.translate('Your reports'), style: RiceTextStyles.button),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const YourReportsScreen(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: RiceSpacings.xl),
             const RiceDivider(),
             const SizedBox(height: RiceSpacings.xl),
             RiceButton(
-              text: 'Logout',
+              text: languageProvider.translate('Logout'),
               icon: Icons.logout,
               type: RiceButtonType.secondary,
               onPressed: _logout,

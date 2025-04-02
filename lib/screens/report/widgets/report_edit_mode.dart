@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
@@ -76,14 +77,14 @@ class ReportEditMode extends StatelessWidget {
 
         SizedBox(height: RiceSpacings.m),
 
-        // disease name input
+        // Disease name input
         TextfieldInput(
           controller: nameController,
           label: languageProvider.translate("Name"),
           hint: languageProvider.translate("Type here..."),
         ),
 
-        // description input
+        // Description input
         SizedBox(height: RiceSpacings.m),
         TextfieldInput(
           controller: descriptionController,
@@ -99,12 +100,14 @@ class ReportEditMode extends StatelessWidget {
           onChanged: (value) => onDiseasePartChanged(value),
         ),
 
-        // submit button
+        // Submit button
         SizedBox(height: RiceSpacings.xl),
         RiceButton(
-          text: currentMode == ReportScreenMode.create ? languageProvider.translate("Submit") : languageProvider.translate("Update"),
+          text: currentMode == ReportScreenMode.create
+              ? languageProvider.translate("Submit")
+              : languageProvider.translate("Update"),
           icon: currentMode == ReportScreenMode.create ? Icons.upload : Icons.edit,
-          onPressed: () => submitReport(),
+          onPressed: () => submitReport(), // No change here; logic moves to ReportScreen
           type: RiceButtonType.primary,
         ),
       ],

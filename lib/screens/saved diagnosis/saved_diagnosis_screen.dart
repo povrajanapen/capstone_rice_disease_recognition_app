@@ -1,6 +1,7 @@
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
+import 'package:capstone_dr_rice/screens/saved%20diagnosis/diagnose_detail_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class SaveScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ResultScreen(
+                            builder: (context) => DiagnoseDetailScreen(
                               imagePath: diagnosis.imagePath,
                               result: {
                                 'class': diagnosis.disease.name,
