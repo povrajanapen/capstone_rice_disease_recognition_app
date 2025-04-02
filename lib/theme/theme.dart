@@ -13,6 +13,8 @@ class RiceColors {
   static Color neutral            = const Color(0xFF5B7A54);
   static Color neutralLight       = const Color(0xFFD4DCB7);
   static Color neutralLighter     = const Color(0xFFEEF4DB);
+  static Color neutralLightest    = const Color.fromARGB(255, 168, 176, 140);
+
 
   static Color greyLight          = const Color(0xFFE2E2E2);
   static Color grey               = const Color.fromARGB(255, 86, 86, 86);

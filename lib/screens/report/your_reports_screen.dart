@@ -1,4 +1,5 @@
 
+
 import 'dart:io';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
@@ -9,13 +10,12 @@ import '../../theme/theme.dart';
 import 'report_screen.dart';
 
 class YourReportsScreen extends StatelessWidget {
-  final List<UserReport> reports;
-  const YourReportsScreen({super.key, required this.reports});
+  const YourReportsScreen({super.key}); // Removed reports parameter
 
   @override
   Widget build(BuildContext context) {
     final reportProvider = Provider.of<ReportProvider>(context);
-    final reports = reportProvider.reports;
+    final reports = reportProvider.reports; // Fetch from provider
     final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
@@ -241,4 +241,3 @@ class YourReportsScreen extends StatelessWidget {
     );
   }
 }
-

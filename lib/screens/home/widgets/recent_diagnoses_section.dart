@@ -1,4 +1,5 @@
 import 'package:capstone_dr_rice/provider/language_provider.dart';
+import 'package:capstone_dr_rice/screens/saved%20diagnosis/diagnose_detail_screen.dart';
 import 'package:capstone_dr_rice/screens/scan/result_screen.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
@@ -54,7 +55,7 @@ class RecentDiagnosesSection extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ResultScreen(
+                          builder: (context) => DiagnoseDetailScreen(
                             imagePath: diagnosis.imagePath,
                             result: {
                               'class': diagnosis.disease.name,

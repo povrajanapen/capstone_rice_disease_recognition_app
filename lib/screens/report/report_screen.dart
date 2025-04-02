@@ -2,12 +2,14 @@ import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/report_provider.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_edit_mode.dart';
 import 'package:capstone_dr_rice/screens/report/widgets/report_view_mode.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
 import '../../models/disease.dart';
 import '../../models/user_report.dart';
 import 'your_reports_screen.dart';
+import '../login/login_screen.dart';
 
 // Define the enum for screen modes
 enum ReportScreenMode { create, view, edit }
@@ -32,7 +34,6 @@ class _ReportScreenState extends State<ReportScreen> {
   String? selectedImagePath;
   late DiseasePart selectedDiseasePart;
   late ReportScreenMode currentMode;
-
 
   @override
   void initState() {
@@ -73,11 +74,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
   void toggleMode() {
     setState(() {
-      // Toggle between view and edit modes
       currentMode =
-          currentMode == ReportScreenMode.view
-              ? ReportScreenMode.edit
-              : ReportScreenMode.view;
+          currentMode == ReportScreenMode.view ? ReportScreenMode.edit : ReportScreenMode.view;
     });
   }
 
@@ -88,8 +86,18 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   void submitReport(LanguageProvider languageProvider) {
-    final isComplete =
-        selectedImagePath != null &&
+    // Check if user is authenticated
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // If user is null, navigate to LoginScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+      return;
+    }
+
+    final isComplete = selectedImagePath != null &&
         nameController.text.isNotEmpty &&
         descriptionController.text.isNotEmpty;
 
@@ -122,28 +130,23 @@ class _ReportScreenState extends State<ReportScreen> {
       );
 
       // Add or update the report in the provider
-      final reportProvider = Provider.of<ReportProvider>(
-        context,
-        listen: false,
-      );
+      final reportProvider = Provider.of<ReportProvider>(context, listen: false);
       if (currentMode == ReportScreenMode.create) {
         reportProvider.addReport(report);
       } else {
         reportProvider.updateReport(report);
       }
 
-      // Navigate to YourReportsScreen
-      Navigator.pushAndRemoveUntil(
+      // Navigate back to YourReportsScreen
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const YourReportsScreen(reports: []),
-        ),
-        (route) => route.isFirst, // Remove all previous routes
+        MaterialPageRoute(builder: (context) => const YourReportsScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(languageProvider.translate("Please fill in all fields and select an image.")),
+          content:
+              Text(languageProvider.translate("Please fill in all fields and select an image.")),
         ),
       );
     }
@@ -174,37 +177,33 @@ class _ReportScreenState extends State<ReportScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: RiceColors.neutralDark),
-        actions:
-            widget.existingReport != null
-                ? [
-                  IconButton(
-                    icon: Icon(
-                      currentMode == ReportScreenMode.view
-                          ? Icons.edit
-                          : Icons.visibility,
-                      color: RiceColors.neutralDark,
-                    ),
-                    onPressed: toggleMode,
+        actions: widget.existingReport != null
+            ? [
+                IconButton(
+                  icon: Icon(
+                    currentMode == ReportScreenMode.view ? Icons.edit : Icons.visibility,
+                    color: RiceColors.neutralDark,
                   ),
-                ]
-                : null,
+                  onPressed: toggleMode,
+                ),
+              ]
+            : null,
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(RiceSpacings.m),
-          child:
-              currentMode == ReportScreenMode.view
-                  ? ReportViewMode(existingReport: widget.existingReport!)
-                  : ReportEditMode(
-                    selectedImagePath: selectedImagePath,
-                    onImageSelected: onImageSelected,
-                    nameController: nameController,
-                    descriptionController: descriptionController,
-                    selectedDiseasePart: selectedDiseasePart,
-                    onDiseasePartChanged: onDiseasePartChanged,
-                    submitReport: () => submitReport(languageProvider),
-                    currentMode: currentMode,
-                  ),
+          child: currentMode == ReportScreenMode.view
+              ? ReportViewMode(existingReport: widget.existingReport!)
+              : ReportEditMode(
+                  selectedImagePath: selectedImagePath,
+                  onImageSelected: onImageSelected,
+                  nameController: nameController,
+                  descriptionController: descriptionController,
+                  selectedDiseasePart: selectedDiseasePart,
+                  onDiseasePartChanged: onDiseasePartChanged,
+                  submitReport: () => submitReport(languageProvider),
+                  currentMode: currentMode,
+                ),
         ),
       ),
     );
