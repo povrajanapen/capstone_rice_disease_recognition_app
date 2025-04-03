@@ -1,6 +1,7 @@
-
+import 'dart:io';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
@@ -31,6 +32,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   String? _profileImagePath;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -48,6 +50,107 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         _profileImagePath = image.path;
       });
     }
+  }
+
+  Future<String?> _uploadImageToFirebase(String userId) async {
+    if (_profileImagePath == null || !_profileImagePath!.startsWith('/')) return null;
+
+    try {
+      final file = File(_profileImagePath!);
+      final storageRef = FirebaseStorage.instance.ref().child('profile_images/$userId.jpg');
+      await storageRef.putFile(file);
+      final downloadUrl = await storageRef.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
+
+  Future<void> _updateProfile() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Validation
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Name cannot be empty'))),
+      );
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty || !_isValidEmail(_emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(languageProvider.translate('Please enter a valid email'))),
+      );
+      return;
+    }
+
+    if (_newPasswordController.text.isNotEmpty || _confirmPasswordController.text.isNotEmpty) {
+      if (_newPasswordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Passwords do not match'))),
+        );
+        return;
+      }
+      if (_newPasswordController.text.length < 6) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Password must be at least 6 characters'))),
+        );
+        return;
+      }
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Upload image to Firebase Storage if changed
+      String? photoUrl = widget.userProfileImage;
+      if (_profileImagePath != widget.userProfileImage && _profileImagePath != null) {
+        photoUrl = await _uploadImageToFirebase(user.uid);
+      }
+
+      // Update Firebase Auth profile
+      await user.updateProfile(
+        displayName: _nameController.text.trim(),
+        photoURL: photoUrl,
+      );
+
+      // Update email if changed
+      if (_emailController.text.trim() != widget.userEmail) {
+        await user.updateEmail(_emailController.text.trim());
+      }
+
+      // Update password if provided
+      if (_newPasswordController.text.isNotEmpty) {
+        await user.updatePassword(_newPasswordController.text);
+      }
+
+      // Notify user and return updated data
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Profile updated successfully'))),
+        );
+        Navigator.pop(context, {
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'photoUrl': photoUrl,
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.translate('Update failed:') + ' $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
   }
 
   @override
@@ -81,8 +184,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   CircleAvatar(
                     radius: 50,
                     backgroundImage: _profileImagePath != null
-                        ? AssetImage(_profileImagePath!)
-                        : const AssetImage('assets/images/profile_placeholder.png'),
+                        ? (_profileImagePath!.startsWith('http')
+                            ? NetworkImage(_profileImagePath!)
+                            : FileImage(File(_profileImagePath!)))
+                        : const AssetImage('assets/images/profile_placeholder.jpg') as ImageProvider,
                   ),
                   Positioned(
                     bottom: 0,
@@ -112,6 +217,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               label: languageProvider.translate('Email'),
               controller: _emailController,
               hint: widget.userEmail,
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: RiceSpacings.xl),
             const RiceDivider(),
@@ -121,24 +227,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             TextfieldInput(
               label: languageProvider.translate('New Password'),
               controller: _newPasswordController,
-              hint: languageProvider.translate('Password'),
+              hint: languageProvider.translate('Enter new password'),
+              obscureText: true,
             ),
             const SizedBox(height: RiceSpacings.m),
             TextfieldInput(
               label: languageProvider.translate('Confirm Password'),
               controller: _confirmPasswordController,
-              hint: languageProvider.translate('Password'),
+              hint: languageProvider.translate('Confirm new password'),
+              obscureText: true,
             ),
             const SizedBox(height: RiceSpacings.xl),
             const RiceDivider(),
             const SizedBox(height: RiceSpacings.xl),
             Center(
-              child: RiceButton(
-                text: languageProvider.translate('Update'),
-                icon: Icons.edit,
-                type: RiceButtonType.primary,
-                onPressed: () {},
-              ),
+              child: _isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(RiceColors.neutralDark),
+                    )
+                  : RiceButton(
+                      text: languageProvider.translate('Update'),
+                      icon: Icons.edit,
+                      type: RiceButtonType.primary,
+                      onPressed: _updateProfile,
+                    ),
             ),
           ],
         ),

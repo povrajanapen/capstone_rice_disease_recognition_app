@@ -3,13 +3,13 @@ import 'package:dio/dio.dart';
 class DiseaseApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://10.0.0.43:5001',
+      baseUrl: 'http://192.168.1.156:5001',
       headers: {'Access-Control-Allow-Origin': '*'},
     ),
   );
 
   Future<Map<String, dynamic>> predictDisease(String imagePath) async {
-    const String apiUrl = 'http://10.0.0.43:5001/predict';
+    const String apiUrl = 'http://192.168.1.156:5001/predict';
 
     try {
       // Prepare the image file as a "multipart/form-data" request

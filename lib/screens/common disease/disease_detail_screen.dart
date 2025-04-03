@@ -1,10 +1,8 @@
-
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
 class DiseaseDetailScreen extends StatefulWidget {
@@ -18,21 +16,47 @@ class DiseaseDetailScreen extends StatefulWidget {
 }
 
 class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
-  final FlutterTts flutterTts = FlutterTts();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isSymptomsPlaying = false;
+  bool _isManagementPlaying = false;
 
   @override
-  void initState() {
-    super.initState();
-    flutterTts.setLanguage('en-US');
-    flutterTts.setPitch(1.0);
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleAudio(String audioPath, bool isPlaying, Function(bool) setPlaying) async {
+    try {
+      if (isPlaying) {
+        await _audioPlayer.stop();
+        await _audioPlayer.seek(Duration.zero); // Reset to start
+        setPlaying(false);
+        print('Stopped audio: $audioPath');
+      } else {
+        await _audioPlayer.stop(); // Stop any other playing audio
+        await _audioPlayer.play(AssetSource(audioPath));
+        setPlaying(true);
+        _audioPlayer.onPlayerComplete.listen((event) {
+          if (mounted) {
+            setState(() => setPlaying(false));
+          }
+        });
+        print('Playing audio: $audioPath');
+      }
+    } catch (e) {
+      print('Error toggling audio: $e');
+    }
+  }
+
+  String _getAudioPath(String languageCode, String key) {
+    final diseaseKey = widget.disease.name.replaceAll(' ', '');
+    return 'audio/$languageCode/${diseaseKey}$key.mp3';
   }
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-
-    String ttsLanguage = languageProvider.languageCode == 'kh' ? 'km-KH' : 'en-US';
-    flutterTts.setLanguage(ttsLanguage);
 
     String nameKey = widget.disease.name;
     String descKey = "${widget.disease.name.replaceAll(' ', '')}Description";
@@ -42,6 +66,10 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
     String translatedDesc = languageProvider.translate(descKey);
     String translatedSymptoms = languageProvider.translate(symptomsKey);
     String translatedManagement = languageProvider.translate(managementKey);
+
+    String languageCode = languageProvider.languageCode; // 'en' or 'kh'
+    String symptomsAudioPath = _getAudioPath(languageCode, 'Symptoms');
+    String managementAudioPath = _getAudioPath(languageCode, 'Management');
 
     return Scaffold(
       appBar: AppBar(
@@ -82,11 +110,6 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // SizedBox(height: RiceSpacings.s),
-                // Text(
-                //   // translatedDesc == descKey ? widget.disease.description : translatedDesc,
-                //   style: RiceTextStyles.body.copyWith(color: RiceColors.neutral),
-                // ),
                 SizedBox(height: RiceSpacings.s),
                 if (widget.disease.affectedPart != null)
                   Row(
@@ -142,10 +165,12 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.volume_up),
-                                  onPressed: () async {
-                                    await flutterTts.speak(translatedSymptoms);
-                                  },
+                                  icon: Icon(_isSymptomsPlaying ? Icons.stop : Icons.volume_up),
+                                  onPressed: () => _toggleAudio(
+                                    symptomsAudioPath,
+                                    _isSymptomsPlaying,
+                                    (value) => setState(() => _isSymptomsPlaying = value),
+                                  ),
                                 ),
                               ],
                             ),
@@ -181,10 +206,12 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.volume_up),
-                                  onPressed: () async {
-                                    await flutterTts.speak(translatedManagement);
-                                  },
+                                  icon: Icon(_isManagementPlaying ? Icons.stop : Icons.volume_up),
+                                  onPressed: () => _toggleAudio(
+                                    managementAudioPath,
+                                    _isManagementPlaying,
+                                    (value) => setState(() => _isManagementPlaying = value),
+                                  ),
                                 ),
                               ],
                             ),
