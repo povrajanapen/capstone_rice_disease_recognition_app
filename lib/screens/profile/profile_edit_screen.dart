@@ -1,4 +1,3 @@
-
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   String? _profileImagePath;
 
   @override
@@ -61,7 +61,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(languageProvider.translate('Edit Profile'), style: RiceTextStyles.body),
+        title: Text(
+          languageProvider.translate('Edit Profile'),
+          style: RiceTextStyles.body,
+        ),
         centerTitle: true,
         backgroundColor: RiceColors.backgroundAccent,
         elevation: 0,
@@ -80,9 +83,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: _profileImagePath != null
-                        ? AssetImage(_profileImagePath!)
-                        : const AssetImage('assets/images/profile_placeholder.png'),
+                    backgroundImage:
+                        _profileImagePath != null
+                            ? AssetImage(_profileImagePath!)
+                            : const AssetImage(
+                              'assets/images/profile_placeholder.png',
+                            ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -92,7 +98,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       child: CircleAvatar(
                         radius: 15,
                         backgroundColor: RiceColors.neutralDark,
-                        child: const Icon(Icons.edit, color: Colors.white, size: 15),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 15,
+                        ),
                       ),
                     ),
                   ),
@@ -116,7 +126,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             const SizedBox(height: RiceSpacings.xl),
             const RiceDivider(),
             const SizedBox(height: RiceSpacings.xl),
-            Text(languageProvider.translate('Change Password?'), style: RiceTextStyles.body),
+            Text(
+              languageProvider.translate('Change Password?'),
+              style: RiceTextStyles.body,
+            ),
             const SizedBox(height: RiceSpacings.m),
             TextfieldInput(
               label: languageProvider.translate('New Password'),
@@ -137,7 +150,79 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 text: languageProvider.translate('Update'),
                 icon: Icons.edit,
                 type: RiceButtonType.primary,
-                onPressed: () {},
+                onPressed: () async {
+                  final name = _nameController.text.trim();
+                  final email = _emailController.text.trim();
+                  final newPassword = _newPasswordController.text.trim();
+                  final confirmPassword =
+                      _confirmPasswordController.text.trim();
+
+                  // Validate input fields
+                  if (name.isEmpty || email.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          languageProvider.translate(
+                            'Please fill in all fields',
+                          ),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  if (newPassword.isNotEmpty &&
+                      newPassword != confirmPassword) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          languageProvider.translate('Passwords do not match'),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  try {
+                    final user = FirebaseAuth.instance.currentUser;
+
+                    // Update email
+                    if (email != widget.userEmail) {
+                      await user?.updateEmail(email);
+                    }
+
+                    // Update password
+                    if (newPassword.isNotEmpty) {
+                      await user?.updatePassword(newPassword);
+                    }
+
+                    // Update displayName
+                    if (name != widget.userName) {
+                      await user?.updateDisplayName(name);
+                    }
+
+                    // Return updated name and email to the previous screen
+                    Navigator.pop(context, {'name': name, 'email': email});
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          languageProvider.translate(
+                            'Profile updated successfully',
+                          ),
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${languageProvider.translate('Failed to update profile')}: $e',
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
           ],
