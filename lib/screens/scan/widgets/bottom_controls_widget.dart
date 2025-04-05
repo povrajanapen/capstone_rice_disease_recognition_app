@@ -1,5 +1,6 @@
 
 import 'package:capstone_dr_rice/provider/language_provider.dart';
+import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class BottomControlsWidget extends StatelessWidget {
@@ -25,7 +26,7 @@ class BottomControlsWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 140, 143, 141),
+          color: RiceColors.neutralLightest,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),

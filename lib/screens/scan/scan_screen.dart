@@ -1,6 +1,7 @@
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/scan/result_screen.dart';
 import 'package:capstone_dr_rice/service/disease_api_service.dart';
+import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -78,7 +79,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(color: const Color.fromARGB(255, 140, 143, 141)),
+          Container(color: RiceColors.neutralLightest),
           const CameraPreviewWidget(),
           AppBarWidget(languageProvider: languageProvider),
           BottomControlsWidget(

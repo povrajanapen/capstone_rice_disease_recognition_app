@@ -54,7 +54,7 @@ class _DetailCardWidgetState extends State<DetailCardWidget> {
 
   String _getAudioPath(String languageCode, String key) {
     final diseaseKey = widget.disease.name.replaceAll(' ', '');
-    return 'audio/$languageCode/${diseaseKey}$key.m4a';
+    return 'audio/$languageCode/${diseaseKey}$key.mp3';
   }
 
   @override
@@ -224,3 +224,4 @@ class _DetailCardWidgetState extends State<DetailCardWidget> {
     );
   }
 }
+
