@@ -1,3 +1,4 @@
+
 import 'package:capstone_dr_rice/models/disease_data.dart';
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/provider/saved_diagnosis_provider.dart';
@@ -8,8 +9,6 @@ import 'package:capstone_dr_rice/screens/scan/widgets/result_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_dr_rice/models/disease.dart';
 import 'package:provider/provider.dart';
-
-import 'package:flutter_tts/flutter_tts.dart';
 
 class DiagnoseDetailScreen extends StatefulWidget {
   final String imagePath;
@@ -25,16 +24,12 @@ class DiagnoseDetailScreen extends StatefulWidget {
   _DiagnoseDetailScreenState createState() => _DiagnoseDetailScreenState();
 }
 
-class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
-    with SingleTickerProviderStateMixin {
-  final FlutterTts flutterTts = FlutterTts();
+class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    flutterTts.setLanguage("en-US");
-    flutterTts.setPitch(1.0);
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -58,9 +53,7 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
         );
   }
 
-
   Future<void> _saveDiagnosis(BuildContext context, LanguageProvider languageProvider) async {
-    // final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final disease = await _getDiseaseFromResult();
     final diagnosisId = DateTime.now().millisecondsSinceEpoch.toString();
     final diagnose = Diagnose(
@@ -68,12 +61,10 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
       disease: disease,
       timestamp: DateTime.now(),
       imagePath: widget.imagePath,
-      confidence:
-          double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
+      confidence: double.tryParse(widget.result['confidence'].toString()) ?? 0.0,
       userId: null,
     );
-    
-    // Check for duplicates in saved diagnoses
+
     final provider = context.read<DiagnosisProvider>();
     final savedDiagnoses = provider.savedDiagnoses;
     final isDuplicate = savedDiagnoses.any(
@@ -83,16 +74,6 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
           d.confidence == diagnose.confidence,
     );
 
-    // if (!isDuplicate) {
-    //   await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
-    //   ScaffoldMessenger.of(
-    //     context,
-    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis saved'))));
-    // } else {
-    //   ScaffoldMessenger.of(
-    //     context,
-    //   ).showSnackBar(const SnackBar(content: Text(LanguageProvider.translate('Diagnosis already saved'))));
-    // }
     if (!isDuplicate) {
       await provider.addDiagnosis(diagnose, widget.imagePath, save: true);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,18 +84,15 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
         SnackBar(content: Text(languageProvider.translate('Diagnosis already saved'))),
       );
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final confidence =
-        double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
+    final confidence = double.tryParse(widget.result['confidence'].toString()) ?? 0.0;
     final confidencePercent = '${(confidence * 100).toStringAsFixed(2)}%';
     final diagnosisProvider = context.watch<DiagnosisProvider>();
     diagnosisProvider.getRecentDiagnoses();
-    final languageProvider =
-        Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -133,10 +111,7 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 10,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.95,
                   height: MediaQuery.of(context).size.height * 0.32,
@@ -167,14 +142,10 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
                     FutureBuilder<Disease>(
                       future: _getDiseaseFromResult(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
                         }
-                        final disease =
-                            snapshot.data ??
+                        final disease = snapshot.data ??
                             Disease(
                               id: 'unknown',
                               name: 'Unknown',
@@ -185,7 +156,6 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
                             );
                         return DetailCardWidget(
                           tabController: _tabController,
-                          flutterTts: flutterTts,
                           disease: disease,
                         );
                       },
@@ -227,4 +197,3 @@ class _DiagnoseDetailScreenState extends State<DiagnoseDetailScreen>
     );
   }
 }
-

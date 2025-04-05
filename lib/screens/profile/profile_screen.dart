@@ -1,3 +1,4 @@
+
 import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/screens/report/your_reports_screen.dart';
 import 'package:capstone_dr_rice/widgets/action/rice_button.dart';
@@ -44,59 +45,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const BottomNavBar(initialIndex: 2), // Set to Home tab
+          builder: (context) => const BottomNavBar(initialIndex: 0), // Set to Home tab (index 0)
         ),
       );
     }
   }
- 
+
   void _showLanguageDialog(BuildContext context, LanguageProvider languageProvider) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: RiceColors.backgroundAccent,
-      title: Text(
-        languageProvider.translate('Select Language'),
-        style: RiceTextStyles.body.copyWith(
-          color: RiceColors.neutralDark,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RiceButton(
-            text: 'English',
-            type: RiceButtonType.primary,
-            onPressed: () {
-              languageProvider.setLanguage('en');
-              Navigator.pop(context);
-            },
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: RiceColors.backgroundAccent,
+        title: Text(
+          languageProvider.translate('Select Language'),
+          style: RiceTextStyles.body.copyWith(
+            color: RiceColors.neutralDark,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: RiceSpacings.m),
-          RiceButton(
-            text: 'ភាសាខ្មែរ',
-            type: RiceButtonType.primary,
-            onPressed: () {
-              languageProvider.setLanguage('kh');
-              Navigator.pop(context);
-            },
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RiceButton(
+              text: 'English',
+              type: RiceButtonType.primary,
+              onPressed: () {
+                languageProvider.setLanguage('en');
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: RiceSpacings.m),
+            RiceButton(
+              text: 'ភាសាខ្មែរ',
+              type: RiceButtonType.primary,
+              onPressed: () {
+                languageProvider.setLanguage('kh');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              languageProvider.translate('Close'),
+              style: RiceTextStyles.button.copyWith(color: RiceColors.neutralDark),
+            ),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            languageProvider.translate('Close'),
-            style: RiceTextStyles.button.copyWith(color: RiceColors.neutralDark),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundImage:
                   userPhotoURL != null && userPhotoURL!.startsWith('http')
                       ? NetworkImage(userPhotoURL!)
-                      : const AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
+                      : const AssetImage('assets/images/profile_placeholder.jpg') as ImageProvider,
             ),
             const SizedBox(height: RiceSpacings.m),
             Text(
@@ -163,6 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setState(() {
                       userName = result['name'];
                       userEmail = result['email'];
+                      userPhotoURL = result['photoUrl']; // Update photo URL
                     });
                   }
                 },
