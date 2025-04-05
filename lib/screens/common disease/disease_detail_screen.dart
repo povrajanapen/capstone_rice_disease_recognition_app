@@ -116,14 +116,18 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                     children: [
                       Text(
                         languageProvider.translate('Affected Part: '),
-                        style: RiceTextStyles.body.copyWith(
+                        style: RiceTextStyles.label.copyWith(
                           color: RiceColors.neutral,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         languageProvider.translate(widget.disease.affectedPart!.name),
-                        style: RiceTextStyles.body.copyWith(color: RiceColors.neutral),
+                        style: RiceTextStyles.label.copyWith(
+                          color: RiceColors.neutral,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -179,7 +183,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                               child: SingleChildScrollView(
                                 child: Text(
                                   translatedSymptoms == symptomsKey ? widget.disease.symptoms : translatedSymptoms,
-                                  style: RiceTextStyles.body.copyWith(
+                                  style: RiceTextStyles.label.copyWith(
                                     color: RiceColors.grey,
                                     fontSize: RiceTextStyles.body.fontSize! - 4,
                                     fontWeight: FontWeight.w400,
@@ -220,7 +224,7 @@ class _DiseaseDetailScreenState extends State<DiseaseDetailScreen> {
                               child: SingleChildScrollView(
                                 child: Text(
                                   translatedManagement == managementKey ? widget.disease.management : translatedManagement,
-                                  style: RiceTextStyles.body.copyWith(
+                                  style: RiceTextStyles.label.copyWith(
                                     color: RiceColors.grey,
                                     fontSize: RiceTextStyles.body.fontSize! - 4,
                                   ),
