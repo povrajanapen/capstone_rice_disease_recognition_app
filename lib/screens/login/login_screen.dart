@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/theme.dart';
@@ -24,21 +22,38 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
 
+    // Check if email or password is empty
     if (email.isEmpty || password.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(languageProvider.translate('Please fill in all fields'))),
+          SnackBar(
+            content: Text(
+              languageProvider.translate(
+                'Please fill in all fields',
+              ), // Using LanguageProvider
+            ),
+          ),
         );
       }
       return;
     }
 
+    // Check if email is valid
     if (!_isValidEmail(email)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(languageProvider.translate('Please enter a valid email address'))),
+          SnackBar(
+            content: Text(
+              languageProvider.translate(
+                'Please enter a valid email address',
+              ), // Using LanguageProvider
+            ),
+          ),
         );
       }
       return;
@@ -56,20 +71,137 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(languageProvider.translate('Login failed:') + ' $e')),
+          SnackBar(
+            content: Text(
+              '${languageProvider.translate('Login failed:')} $e', // Using LanguageProvider
+            ),
+          ),
         );
       }
     } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
-        }); // Properly closed
+        });
       }
     }
   }
 
   bool _isValidEmail(String email) {
     return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+  }
+
+  void _showForgotPasswordDialog() {
+    final TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Forgot Password',
+                  style: RiceTextStyles.body.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: RiceColors.neutralDark,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Enter your email to reset your password',
+                  style: RiceTextStyles.body.copyWith(
+                    fontSize: 14,
+                    color: RiceColors.neutral,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: RiceTextStyles.button.copyWith(
+                          color: RiceColors.neutralDark,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final email = emailController.text.trim();
+                        if (email.isEmpty) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please enter your email')),
+                          );
+                          return;
+                        }
+
+                        try {
+                          await AuthService().sendPasswordResetEmail(email);
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Password reset email sent'),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Failed to send password reset email. Please try again later.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: RiceColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        'Submit',
+                        style: RiceTextStyles.button.copyWith(
+                          color: RiceColors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -144,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // TODO: Implement forgot password logic
+                      _showForgotPasswordDialog();
                     },
                     child: Text(
                       languageProvider.translate('Forgot password?'),
@@ -160,16 +292,19 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: RiceSpacings.xl),
               Center(
-                child: _isLoading
-                    ? CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(RiceColors.neutralDark),
-                      )
-                    : RiceButton(
-                        text: languageProvider.translate('Login'),
-                        icon: Icons.login,
-                        type: RiceButtonType.primary,
-                        onPressed: _login,
-                      ),
+                child:
+                    _isLoading
+                        ? CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            RiceColors.neutralDark,
+                          ),
+                        )
+                        : RiceButton(
+                          text: languageProvider.translate('Login'),
+                          icon: Icons.login,
+                          type: RiceButtonType.primary,
+                          onPressed: _login,
+                        ),
               ),
               const SizedBox(height: RiceSpacings.xl),
             ],
