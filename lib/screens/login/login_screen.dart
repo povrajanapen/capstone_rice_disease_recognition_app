@@ -97,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) {
+      final languageProvider = Provider.of<LanguageProvider>(context);
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -108,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Forgot Password',
+                  languageProvider.translate("Reset Password"),
                   style: RiceTextStyles.body.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -117,7 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Enter your email to reset your password',
+                  languageProvider.translate(
+                    "Enter your email to reset your password"
+                  ),
                   style: RiceTextStyles.body.copyWith(
                     fontSize: 14,
                     color: RiceColors.neutral,
@@ -127,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    labelText: 'Email Address',
+                    labelText: languageProvider.translate('Email Address'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -143,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        'Cancel',
+                        languageProvider.translate('Cancel'),
                         style: RiceTextStyles.button.copyWith(
                           color: RiceColors.neutralDark,
                         ),
@@ -156,7 +159,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (email.isEmpty) {
                           if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please enter your email')),
+                            SnackBar(
+                              content: Text(
+                                languageProvider.translate(
+                                  'Please enter your email'
+                                ),
+                              ),
+                            ),
                           );
                           return;
                         }
@@ -167,7 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Password reset email sent'),
+                              content: Text(
+                                languageProvider.translate(
+                                  'Password reset email sent'
+                                ),
+                              ),
                             ),
                           );
                         } catch (e) {
@@ -175,7 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Failed to send password reset email. Please try again later.',
+                                languageProvider.translate(
+                                  'Failed to send password reset email. Please try again later.'
+                                ),
                               ),
                             ),
                           );
@@ -188,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       child: Text(
-                        'Submit',
+                        languageProvider.translate('Submit'),
                         style: RiceTextStyles.button.copyWith(
                           color: RiceColors.white,
                         ),

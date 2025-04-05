@@ -85,6 +85,7 @@
     "Please enter a valid email address": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលដែលត្រឹមត្រូវ",
     "Login failed": "ការចូលបានបរាជ័យ",
 
+
     "login": "ចូល",
     "logout": "ចាកចេញ",
     "email": "អ៊ីមែល",
@@ -107,6 +108,14 @@
     "select_language": "ជ្រើសរើសភាសា",
     "language": "ភាសា",
     "close": "បិទ",
+
+
+    "Reset Password": "កំណត់ពាក្យសម្ងាត់ឡើងវិញ",
+    "Enter your email to reset your password": "បញ្ចូលអ៊ីមែលរបស់អ្នកដើម្បីកំណត់ពាក្យសម្ងាត់របស់អ្នកឡើងវិញ",
+    "Please enter your email": "សូមបញ្ចូលអ៊ីមែលរបស់អ្នក",
+    "Password reset email sent": "បានផ្ញើអ៊ីមែលកំណត់ពាក្យសម្ងាត់ឡើងវិញ",
+    "Failed to send password reset email. Please try again later.": "បរាជ័យក្នុងការផ្ញើអ៊ីមែលកំណត់ពាក្យសម្ងាត់ឡើងវិញ! សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ",
+
 
     "Leaf Blast": "ជំងឺប្លាស្ត",
     "Brown Spot": "ជំងឺចំណុចត្នោត",

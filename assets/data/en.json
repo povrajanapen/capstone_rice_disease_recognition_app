@@ -83,6 +83,7 @@
     "Full Name": "Full Name",
     "Already have an account?": "Already have an account?",
     "Create account": "Create account",
+    
 
     "login": "Login",
     "logout": "Logout",
@@ -108,6 +109,13 @@
     "close": "Close",
 
 
+    "Reset Password": "Reset Password",
+    "Enter your email to reset your password": "Enter your email to reset your password",
+    "Please enter your email": "Please enter your email",
+    "Password reset email sent": "Password reset email sent",
+    "Failed to send password reset email. Please try again later.": "Failed to send password reset email. Please try again later.",
+
+    
     "Leaf Blast": "Blast",
     "Brown Spot": "Brown Spot",
     "Tungro": "Tungro",

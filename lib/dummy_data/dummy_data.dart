@@ -15,9 +15,9 @@ final List<SlideContent> sliderContent = [
     subtitle: 'Get instant diagnosis and treatment recommendations',
   ),
   SlideContent(
-    image: 'assets/images/disease_thumbnail.jpg',
-    title: 'Protect your rice yield',
-    subtitle: 'Get instant diagnosis and treatment recommendations',
+    image: 'assets/images/e_rice.png',
+    title: 'E-Rice Detector',
+    subtitle: 'Rice Disease Detector Application Created by UMM Students',
   ),
 ];
 
