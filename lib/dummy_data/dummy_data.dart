@@ -13,7 +13,7 @@ final List<SlideContent> sliderContent = [
     subtitle: "diagnosis_prompt",
   ),
   SlideContent(
-    image: 'assets/images/FAO.png',
+    image: 'assets/images/e_rice.png',
     title: "app_name",
     subtitle: "app_description",
   ),
