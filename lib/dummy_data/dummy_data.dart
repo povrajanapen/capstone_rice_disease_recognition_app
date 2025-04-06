@@ -1,26 +1,23 @@
-// lib/data/dummy_data.dart
-
 import '../screens/home/widgets/news_slider.dart';
 
-// Dummy slider content
+// Dummy slider content with keys matching JSON
 final List<SlideContent> sliderContent = [
   SlideContent(
     image: 'assets/images/SCAN.png',
-    title: 'Tell me phone, what\'s destroying my crops?',
-    subtitle: 'Scan your rice plants to detect diseases early',
+    title: "crop_destruction_query",
+    subtitle: "scan_prompt",
   ),
   SlideContent(
     image: 'assets/images/disease_thumbnail.jpg',
-    title: 'Protect your rice yield',
-    subtitle: 'Get instant diagnosis and treatment recommendations',
+    title: "protect_yield",
+    subtitle: "diagnosis_prompt",
   ),
   SlideContent(
-    image: 'assets/images/e_rice.png',
-    title: 'E-Rice Detector',
-    subtitle: 'Rice Disease Detector Application Created by UMM Students',
+    image: 'assets/images/FAO.png',
+    title: "app_name",
+    subtitle: "app_description",
   ),
 ];
-
 // Feature buttons data with translation keys
 final List<Map<String, String>> featureButtons = [
   {

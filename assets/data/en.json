@@ -108,6 +108,13 @@
     "language": "Language",
     "close": "Close",
 
+    "crop_destruction_query": "Tell me phone, what's destroying my crops?",
+    "scan_prompt": "Scan your rice plants to detect diseases early.",
+    "protect_yield": "Protect your rice yield",
+    "diagnosis_prompt": "Get instant diagnosis and treatment recommendations",
+    "app_name": "E-Rice Detector",
+    "app_description": "Rice Disease Detector Application Created by UMM Students",
+
 
     "Reset Password": "Reset Password",
     "Enter your email to reset your password": "Enter your email to reset your password",
