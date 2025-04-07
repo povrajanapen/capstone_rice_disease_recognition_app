@@ -1,7 +1,8 @@
+import 'package:capstone_dr_rice/provider/language_provider.dart';
 import 'package:capstone_dr_rice/theme/theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../../../dummy_data/dummy_data.dart';
 
 class NewsSlider extends StatelessWidget {
@@ -9,24 +10,25 @@ class NewsSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return CarouselSlider(
       options: CarouselOptions(
-        height: 200, // Adjust height as needed
-        autoPlay: true, // Enables automatic sliding
-        autoPlayInterval: const Duration(seconds: 3), // Change slide every 3 sec
-        autoPlayAnimationDuration: const Duration(milliseconds: 800), // Smooth transition
-        enlargeCenterPage: true, // Slightly enlarges active slide
-        viewportFraction: 0.9, // Adjust how much of the next slides are visible
+        height: 200,
+        autoPlay: true,
+        autoPlayInterval: const Duration(seconds: 3),
+        autoPlayAnimationDuration: const Duration(milliseconds: 800),
+        enlargeCenterPage: true,
+        viewportFraction: 0.9,
       ),
       items: sliderContent.map((slide) {
-        return _buildSlide(slide);
+        return _buildSlide(slide, languageProvider);
       }).toList(),
     );
   }
-
 }
 
-Widget _buildSlide(SlideContent slide) {
+Widget _buildSlide(SlideContent slide, LanguageProvider languageProvider) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(10),
     child: Stack(
@@ -54,8 +56,14 @@ Widget _buildSlide(SlideContent slide) {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(slide.title, style:  RiceTextStyles.body.copyWith(color: Colors.white)),
-              Text(slide.subtitle, style:  TextStyle(color: Colors.white, fontSize: 12)),
+              Text(
+                languageProvider.translate(slide.title),
+                style: RiceTextStyles.body.copyWith(color: Colors.white),
+              ),
+              Text(
+                languageProvider.translate(slide.subtitle),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
             ],
           ),
         ),
@@ -75,4 +83,3 @@ class SlideContent {
     required this.subtitle,
   });
 }
-
